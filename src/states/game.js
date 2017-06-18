@@ -1,7 +1,6 @@
 /* globals __DEV__ */
 import Phaser from 'phaser-ce'
-import {Map} from '../map'
-import {Player} from '../unit'
+import {Map} from '../map/map'
 
 export default class extends Phaser.State {
     init () {}
@@ -9,29 +8,75 @@ export default class extends Phaser.State {
 
     create () {
         this.stage.backgroundColor = '#111'
-        this.game.world.scale.setTo(3, 3)
+        // this.game.world.scale.setTo(3, 3)
+        // this.game.world.scale.setTo(2, 2)
         this.input.useHandCursor = true
-        this.time.advancedTiming = true;
+        this.time.advancedTiming = true
         this.stage.disableVisibilityChange = false
 
         this.map = new Map(this)
         this.map.generate()
+        var map = this.map
 
-        this.player = new Player(this.map, {x:0, y:0})
+        this.cursors = this.input.keyboard.createCursorKeys()
 
-        this.cursors = this.input.keyboard.createCursorKeys();
+        this.input.keyboard.onUpCallback = function(e) {
+            if(e.keyCode == Phaser.Keyboard.M){
+                map.toggleFarMap()
+            }
 
-        this.map.zoomInXY(0, 0)
+            if(e.keyCode == Phaser.Keyboard.H){
+                map.toggleHeighmap()
+            }
+        }
     }
 
     render () {
-        this.game.debug.text(this.game.time.fps, 2, 20, "#ffffff");
-        if (window.overCoords)
-            this.game.debug.text('Over: ' + window.overCoords.x + ',' + window.overCoords.y, 2, 40, "#ffffff");
-        if (this.map.zoomedCoords)
-            this.game.debug.text('Zoomed: ' + this.map.zoomedCoords.x + ',' + this.map.zoomedCoords.y, 2, 60, "#ffffff");
-        if (__DEV__) {
-            // this.game.debug.spriteInfo(this.mushroom, 32, 32)
+        let h = 20
+        this.game.debug.text(this.game.time.fps, 2, h, "#ffffff");
+        h += 20
+        let text = ''
+        if (window.overCoords) {
+            text = 'Over: ' + window.overCoords.x + ',' + window.overCoords.y
+            this.game.debug.text(text, 2, h, "#ffffff")
+            h += 20
+        }
+
+        if (window.overSector) {
+            text = 'Sector: ' + window.overSector.x + ',' + window.overSector.y
+            this.game.debug.text(text, 2, h, "#ffffff")
+            h += 20
+        }
+        if (window.overSector) {
+            text = 'Sector Rounded: ' + Math.round(window.overSector.x) + ',' + Math.round(window.overSector.y)
+            this.game.debug.text(text, 2, h, "#ffffff")
+            h += 20
+        }
+        if (window.overSectorCubeRound) {
+            text = 'Sector Rounded: ' + window.overSectorCubeRound.x + ',' + window.overSectorCubeRound.y
+            this.game.debug.text(text, 2, h, "#ffffff")
+            h += 20
+        }
+
+        if (this.map.zoomedCoordsFar) {
+            text = 'Zoomed Far: ' + this.map.zoomedCoordsFar.x + ',' + this.map.zoomedCoordsFar.y
+            this.game.debug.text(text, 2, h, "#ffffff")
+            h += 20
+        }
+        if (this.map.zoomedCoordsNear) {
+            text = 'Zoomed Near: ' + this.map.zoomedCoordsNear.x + ',' + this.map.zoomedCoordsNear.y
+            this.game.debug.text(text, 2, h, "#ffffff")
+            h += 20
+        }
+
+        if (this.map.playerPos) {
+            text = 'Player: ' + this.map.playerPos.x + ',' + this.map.playerPos.y
+            this.game.debug.text(text, 2, h, "#ffffff")
+            h += 20
+            let roundedPos = this.map.toSector(this.map.playerPos)
+            text = 'Player Sector: ' + roundedPos.x + ',' + roundedPos.y
+            this.game.debug.text(text, 2, h, "#ffffff")
+            h += 20
         }
     }
 
@@ -50,26 +95,6 @@ export default class extends Phaser.State {
             this.game.camera.y = this.game.camera.y + speed
         }
 
-        if (this.input.keyboard.isDown(Phaser.Keyboard.ESC)) {
-            this.map.zoomOut()
-        }
-
-        if (this.input.keyboard.isDown(Phaser.Keyboard.H)) {
-            this.map.toggleHeighmap()
-        }
-
-        if (this.input.keyboard.isDown(Phaser.Keyboard.W)) {
-            this.player.move('nw')
-        } else if (this.input.keyboard.isDown(Phaser.Keyboard.T)) {
-            this.player.move('ne')
-        } else if (this.input.keyboard.isDown(Phaser.Keyboard.D)) {
-            this.player.move('w')
-        } else if (this.input.keyboard.isDown(Phaser.Keyboard.S)) {
-            this.player.move('e')
-        } else if (this.input.keyboard.isDown(Phaser.Keyboard.V)) {
-            this.player.move('sw')
-        } else if (this.input.keyboard.isDown(Phaser.Keyboard.G)) {
-            this.player.move('se')
-        }
+        this.map.update(this.input)
     }
 }

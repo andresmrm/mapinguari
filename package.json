@@ -1,15 +1,14 @@
 {
-  "name": "PhaserES6Webpack",
+  "name": "Hexando",
   "version": "1.0.0",
   "description": "",
-  "author": "leandro cabrera <leandcabrera@gmail.com>",
   "main": "index.js",
   "scripts": {
     "dev": "webpack",
     "deploy": "webpack --config webpack.production.config.js",
     "test": "eslint ./src/**/**.js"
   },
-  "license": "MIT",
+  "license": "AGPL",
   "devDependencies": {
     "alea": "0.0.9",
     "babel-core": "^6.24.1",
