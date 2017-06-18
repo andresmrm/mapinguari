@@ -1,6 +1,7 @@
 /* globals __DEV__ */
 import Phaser from 'phaser-ce'
 import {Map} from '../map/map'
+import {axialToCube, axialDistance} from '../map/utils'
 
 export default class extends Phaser.State {
     init () {}
@@ -69,12 +70,23 @@ export default class extends Phaser.State {
             h += 20
         }
 
-        if (this.map.playerPos) {
-            text = 'Player: ' + this.map.playerPos.x + ',' + this.map.playerPos.y
+        if (this.map.player.coords) {
+            text = 'Player: ' + this.map.player.coords.x + ',' + this.map.player.coords.y
             this.game.debug.text(text, 2, h, "#ffffff")
             h += 20
-            let roundedPos = this.map.toSector(this.map.playerPos)
+
+            let roundedPos = this.map.toSector(this.map.player.coords)
             text = 'Player Sector: ' + roundedPos.x + ',' + roundedPos.y
+            this.game.debug.text(text, 2, h, "#ffffff")
+            h += 20
+
+            let cubic = axialToCube(this.map.player.coords)
+            text = 'Player Cubic: ' + cubic.x + ',' + cubic.y + ',' + cubic.z
+            this.game.debug.text(text, 2, h, "#ffffff")
+            h += 20
+
+            let originDist = axialDistance(this.map.player.coords, {x:0,y:0})
+            text = 'OrigDist: ' + originDist
             this.game.debug.text(text, 2, h, "#ffffff")
             h += 20
         }

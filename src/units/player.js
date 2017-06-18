@@ -5,11 +5,11 @@ import Unit from './unit'
 export default class Player extends Unit {
     constructor (map, coords) {
         super(map, coords, 31)
+        this.moveThrottleTime = 100
     }
 
     playerMove(direction) {
-        if(this.throttleMove(direction, 100)) {
-            this.map.playerPos = this.coords
+        if(this.throttleMove(direction, this.moveThrottleTime)) {
             this.map.checkSectorChange(this.coords)
             // if (config.centerPlayer) this.map.centerViewport(this.coords)
         }

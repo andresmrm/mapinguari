@@ -1,6 +1,6 @@
 /*
   Based on: http://www.redblobgames.com/grids/hexagons/
-  */
+*/
 
 import Phaser from 'phaser-ce'
 
@@ -10,7 +10,7 @@ import Cattle from '../units/cattle'
 
 import Heightmap from './heightmap'
 import {pointyDirections, createGroup, axialDistance, cubeToAxial, axialToCube,
-        invMatrix, cubeRound} from './utils'
+        invMatrix, cubeRound, translate} from './utils'
 
 
 function over(tile) {
@@ -57,12 +57,15 @@ export class Map {
 
         this.nearRootGroup = createGroup(this, this.rootGroup)
         this.nearUnitsGroup = createGroup(this, this.nearRootGroup)
-        this.nearUnitsGroup.z = 20
+        this.nearUnitsGroup.z = 2
         this.nearRootGroup.exists = false
 
         this.farRootGroup = createGroup(this, this.rootGroup)
         this.farMapGroup = createGroup(this, this.farRootGroup)
+        this.farUnitsGroup = createGroup(this, this.farRootGroup)
+        this.farUnitsGroup.z = 2
         this.farRootGroup.exists = false
+        this.farRootGroup.sort('z', Phaser.Group.SORT_ASCENDING)
 
         // Rings that will be shown to more than one sector
         this.transitionRings = 5
@@ -84,6 +87,14 @@ export class Map {
         this.columns = 2*this.rings-1
 
         this.heightmap = new Heightmap(this)
+
+
+        // safeDist is used to optimize out of map check.
+        // If unit distance to origin is <= safedist, it's not out of map.
+        // This avoids more complicated checks. Any better idea?
+        let r = this.rings,
+            t = this.transitionRings
+        this.safeDist = r-1 + Math.floor(r/2)*(r+Math.floor(t/2)-t) + Math.floor((r-1)/2)*(2*r-1-t)
     }
 
     // From near to far coords
@@ -127,7 +138,20 @@ export class Map {
         let initial = {x:0, y:0}
         this.player = new Player(this, initial)
         this.zoomInCoords(initial)
+
+        this.playerIcon = this.addSprite(this.farUnitsGroup, initial, this.player.tile)
+        this.game.add.tween(this.playerIcon).to( { alpha: 0.2 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true)
+
         new Cattle(this, {x:2,y:2})
+    }
+
+    updateIconCoords() {
+        if (this.playerIcon) {
+            let icon = this.playerIcon,
+                screenCoords = this.axialToPixelFlat(this.zoomedCoordsFar)
+            icon.x = screenCoords.x
+            icon.y = screenCoords.y
+        }
     }
 
     toggleHeighmap() {
@@ -176,6 +200,9 @@ export class Map {
 
         let noise = getNoise(noiseCoords.x, noiseCoords.y)
 
+        // let sector = cubeToAxial(cubeRound(axialToCube(this.toFarCoords(coords))))
+        // noise = Math.abs(sector.x)/5 + Math.abs(sector.y)/10
+
         let tile = this.addSprite(group, pixelCoords)
         tile.coords = coords
         tile.map = this
@@ -206,10 +233,10 @@ export class Map {
         tile.inputEnabled = true
         tile.input.useHandCursor = true
         tile.input.pixelPerfectOver = true
-        tile.input.pixelPerfectClick = true
+        // tile.input.pixelPerfectClick = true
         tile.events.onInputOver.add(over, this)
         tile.events.onInputOut.add(out, this)
-        if (zoomable) tile.events.onInputUp.add(clicked, this)
+        // if (zoomable) tile.events.onInputUp.add(clicked, this)
 
         return tile
     }
@@ -246,11 +273,13 @@ export class Map {
             this.zoomedCoordsNear = this.toNearCoords(tile.coords)
             this.nearRootGroup.sort('z', Phaser.Group.SORT_ASCENDING)
             this.centerViewport(this.zoomedCoordsNear)
+            this.updateIconCoords()
             this.createTiles(
                 this.nearMapGroup,
                 axialToCube(this.zoomedCoordsNear),
                 false
             )
+            this.displayOnlyNearUnits()
         }
     }
 
@@ -270,31 +299,69 @@ export class Map {
     }
 
     getNearestSector(coords) {
-        let far = this.toFarCoords(coords),
-            d = this.rings*100,
-            nearestNeighbor = null,
+        // Uses zoomedCoordsFar as starting point for neighbors ! NOT ANYMORE
+        // let far = this.zoomedCoordsFar,
+        let far = cubeToAxial(cubeRound(axialToCube(this.toFarCoords(coords)))),
+            d = axialDistance(this.toNearCoords(far), coords),
+            nearestNeighbor = far,
             neighbor = null,
             newD = null
 
-        far.x = Math.round(far.x)
-        far.y = Math.round(far.y)
-        far = this.zoomedCoordsFar
+        // Check if initial sector is invalid
+        if (axialDistance(far, {x:0,y:0}) >= this.rings) {
+            d = this.rings*2
+            nearestNeighbor = null
+        }
 
         for (let key in pointyDirections) {
             var dir = pointyDirections[key]
             neighbor = {x:far.x+dir.x, y:far.y+dir.y}
-            newD = axialDistance(this.toNearCoords(neighbor), coords)
-            if (newD < d) {
-                d = newD
-                nearestNeighbor = neighbor
+
+            // Check if is a valid neighbor
+            if (axialDistance(neighbor) < this.rings) {
+
+                newD = axialDistance(this.toNearCoords(neighbor), coords)
+                if (newD < d) {
+                    d = newD
+                    nearestNeighbor = neighbor
+                }
             }
         }
-        return nearestNeighbor
+
+        // Check if is leaving map (the nearest valid sector is too far)
+        if (d < this.rings)
+            return nearestNeighbor
+        else
+            return null
+    }
+
+    displayOnlyNearUnits() {
+        this.nearUnitsGroup.forEach((sprite) => sprite.unit.checkUnitInViewport())
+    }
+
+    checkCoordsInViewport(coords) {
+        return axialDistance(coords, this.zoomedCoordsNear) < this.rings
     }
 
     checkSectorChange(coords) {
         let d = axialDistance(coords, this.zoomedCoordsNear)
-        if (d > this.hardRings) this.zoomInCoords(this.getNearestSector(coords))
+        if (d > this.hardRings) {
+            let newSector = this.getNearestSector(coords)
+            if (newSector) this.zoomInCoords(newSector)
+            else return null
+        }
+    }
+
+    moveUnit(coords, direction) {
+        let newCoords = translate(coords, direction)
+
+        // Cheap check first
+        if (axialDistance(newCoords) <= this.safeDist) {
+            return newCoords
+        } else {
+            if (this.getNearestSector(newCoords)) return newCoords
+            else return coords
+        }
     }
 
     update(input) {

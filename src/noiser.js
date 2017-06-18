@@ -30,3 +30,8 @@ export function getNoise(x, y) {
         noiseGen.noise2D(x*f3, y*f3) * w3
         ) / (w1+w2+w3)
 }
+
+
+export function randTrue(prop) {
+    return random() > prop ? true : false
+}

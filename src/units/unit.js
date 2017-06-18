@@ -1,5 +1,5 @@
-import {random} from '../noiser'
-import {getRandomDirection, translate} from '../map/utils'
+import {randTrue} from '../noiser'
+import {getRandomDirection, axialDistance} from '../map/utils'
 
 export default class Unit {
     constructor(map, coords, tile) {
@@ -9,8 +9,11 @@ export default class Unit {
         this.tile = tile
         this.sprite = this.map.addUnit(this)
         this.sprite.update = () => this.update()
+        this.sprite.unit = this
         this.updateSpriteCoords()
         this.last_moved = 0
+        this.initialFear = 4
+        this.fear = this.initialFear
     }
 
     updateSpriteCoords() {
@@ -21,8 +24,13 @@ export default class Unit {
 
     move(direction) {
         this.last_moved = this.game.time.now
-        this.coords = translate(this.coords, direction)
+        this.coords = this.map.moveUnit(this.coords, direction)
         this.updateSpriteCoords()
+        this.checkUnitInViewport()
+    }
+
+    checkUnitInViewport() {
+        this.sprite.visible = this.map.checkCoordsInViewport(this.coords)
     }
 
     // Only allow move if last move was more than time ago.
@@ -40,9 +48,19 @@ export default class Unit {
     }
 
     wanderer() {
-        if (random() > 0.99) this.throttleMove(getRandomDirection(), 2000)
+        if (randTrue(0.99)) this.throttleMove(getRandomDirection(), 2000)
     }
 
     flee() {
+        var playerCoords = this.map.player.coords
+        if (axialDistance(playerCoords, this.coords) < this.fear/2) {
+            if (randTrue(0.5)) this.fear += 1
+            let dx = this.coords.x - playerCoords.x,
+                dy = this.coords.y - playerCoords.y
+            this.throttleMove({x: Math.sign(dx), y: Math.sign(dy)},
+                              this.map.player.moveThrottleTime/2)
+        } else {
+            if (randTrue(0.99) && this.fear > this.initialFear) this.fear--
+        }
     }
 }
