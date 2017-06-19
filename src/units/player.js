@@ -10,9 +10,12 @@ export default class Player extends Unit {
 
     playerMove(direction) {
         if(this.throttleMove(direction, this.moveThrottleTime)) {
-            this.map.checkSectorChange(this.coords)
+            this.map.changeSector(this.coords)
             // if (config.centerPlayer) this.map.centerViewport(this.coords)
         }
+    }
+
+    triedToLeaveWorld() {
     }
 
     update() {

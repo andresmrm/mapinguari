@@ -12,7 +12,7 @@ export default class Unit {
         this.sprite.unit = this
         this.updateSpriteCoords()
         this.last_moved = 0
-        this.initialFear = 4
+        this.initialFear = 6
         this.fear = this.initialFear
     }
 
@@ -24,9 +24,24 @@ export default class Unit {
 
     move(direction) {
         this.last_moved = this.game.time.now
-        this.coords = this.map.moveUnit(this.coords, direction)
-        this.updateSpriteCoords()
-        this.checkUnitInViewport()
+        try {
+            this.coords = this.map.moveUnit(this.coords, direction)
+            this.updateSpriteCoords()
+            this.checkUnitInViewport()
+        } catch(error) {
+            if (error=='outOfWorld') this.triedToLeaveWorld()
+            return false
+        }
+        return true
+    }
+
+    // Called when the unit tried to leave the world
+    triedToLeaveWorld() {
+        this.destroy()
+    }
+
+    destroy() {
+        this.sprite.destroy()
     }
 
     checkUnitInViewport() {
@@ -37,8 +52,7 @@ export default class Unit {
     // Returns true if moved, false otherwise.
     throttleMove(direction, time) {
         if(this.game.time.now - this.last_moved > time) {
-            this.move(direction)
-            return true
+            return this.move(direction)
         } else {
             return false
         }

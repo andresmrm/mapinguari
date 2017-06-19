@@ -103,6 +103,19 @@ export function invMatrix(m) {
     ]
 }
 
+// Calls a function for each hex in N distance from center
+export function forEachHexInDist(center, N, fn) {
+    let {x:cx,y:cy,z:cz} = center
+
+    for (var dz=-N; dz <= N; dz++) {
+        for (var dx=Math.max(-N, -dz-N); dx <= Math.min(N, -dz+N); dx++) {
+            let dy = -dx-dz
+            let cubic = {x: cx+dx, y: cy+dy, z: cz+dz}
+            fn(cubeToAxial(cubic))
+        }
+    }
+}
+
 
 
 

@@ -1,8 +1,6 @@
 # Hexando
 
-Based on:
-
-https://github.com/lean/phaser-es6-webpack
+Game/hex engine?
 
 ## 2. Install node.js and npm:
 
@@ -30,6 +28,9 @@ Run:
 This will optimize and minimize the compiled bundle.
 
 ## Credits
-Big thanks to this great repo:
 
+Big thanks to this great repo:
 https://github.com/lean/phaser-es6-webpack
+
+And this great source of hex maps knowledge:
+http://www.redblobgames.com/grids/hexagons/

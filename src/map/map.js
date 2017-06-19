@@ -7,27 +7,13 @@ import Phaser from 'phaser-ce'
 import {getNoise} from '../noiser'
 import Player from '../units/player'
 import Cattle from '../units/cattle'
+import Cutter from '../units/cutter'
+import Businessman from '../units/businessman'
 
 import Heightmap from './heightmap'
+import {FarTile, NearTile} from './tiles'
 import {pointyDirections, createGroup, axialDistance, cubeToAxial, axialToCube,
-        invMatrix, cubeRound, translate} from './utils'
-
-
-function over(tile) {
-    tile.previousAlpha = tile.alpha
-    tile.alpha = 0.5
-    window.overCoords = tile.coords
-    window.overSector = tile.sector
-    if (tile.sector)
-        window.overSectorCubeRound = cubeToAxial(cubeRound(axialToCube(tile.sector)))
-}
-function out(tile) {
-    tile.alpha = tile.previousAlpha
-}
-function clicked(tile) {
-    console.log(tile.x, tile.y)
-    tile.map.zoomInTile(tile)
-}
+        invMatrix, cubeRound, translate, forEachHexInDist} from './utils'
 
 
 export class Map {
@@ -43,6 +29,7 @@ export class Map {
         this.tilePointyHeightVariationPerRow = 20
         this.tileFlatWidthVariationPerColumn = 26
 
+        // TODO: Allow different number of far and near rings
         this.rings = 8
 
         this.mapTopOffset = 0
@@ -132,7 +119,7 @@ export class Map {
     }
 
     generate () {
-        this.createTiles(this.farMapGroup, {x:0, y:0, z:0})
+        this.createFarTiles({x:0, y:0, z:0})
         this.toggleHeighmap()
         this.closeFarMap()
         let initial = {x:0, y:0}
@@ -143,6 +130,11 @@ export class Map {
         this.game.add.tween(this.playerIcon).to( { alpha: 0.2 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true)
 
         new Cattle(this, {x:2,y:2})
+        new Cattle(this, {x:4,y:4})
+        new Cattle(this, {x:0,y:4})
+        new Cattle(this, {x:0,y:-2})
+        new Cutter(this, {x:1,y:-2})
+        new Businessman(this, {x:3,y:-2})
     }
 
     updateIconCoords() {
@@ -181,84 +173,90 @@ export class Map {
 
     addSprite(group, coords, tile=0) {
         let sprite = group.create(coords.x, coords.y, 'tiles', tile)
-        sprite.anchor.x = 0.5
-        sprite.anchor.y = this.tileCenterHeight / this.tileSpriteHeight
+        this.setAnchor(sprite)
         return sprite
     }
 
-    createTile(group, coords, zoomable) {
-        let pixelCoords = null,
-            noiseCoords = null
-        if (zoomable) {
-            pixelCoords = this.axialToPixelFlat(coords)
-            noiseCoords = this.toNearCoords(coords)
-
-        } else {
-            pixelCoords = this.axialToPixelPointy(coords)
-            noiseCoords = coords
-        }
-
-        let noise = getNoise(noiseCoords.x, noiseCoords.y)
-
-        // let sector = cubeToAxial(cubeRound(axialToCube(this.toFarCoords(coords))))
-        // noise = Math.abs(sector.x)/5 + Math.abs(sector.y)/10
-
-        let tile = this.addSprite(group, pixelCoords)
-        tile.coords = coords
-        tile.map = this
-        tile.frame = 0
-
-        if (noise > .01) tile.frame = 4
-        if (noise > .6) tile.frame = 2
-        if (noise > .8) tile.frame = 3
-        if (noise > .9) tile.frame = 3
-
-        if (zoomable) {
-            tile.frame = 15
-            if (noise > .01) tile.frame = 16
-            if (noise > .6) tile.frame = 17
-            if (noise > .8) tile.frame = 18
-            if (noise > .9) tile.frame = 18
-        }
-
-        // let d = cubeDistance(axialToCube(coords), {x:0,y:0,z:0})
-        // if (d <= (this.rings-1)) tile.alpha=0.75
-        // if (d <= (this.rings-this.transitionRings-1)) tile.alpha=0.85
-        // tile.alpha = Math.abs(sector.x)/5 + Math.abs(sector.y)/10
-
-        if (!zoomable) {
-            tile.sector = this.toSector(coords)
-        }
-
-        tile.inputEnabled = true
-        tile.input.useHandCursor = true
-        tile.input.pixelPerfectOver = true
-        // tile.input.pixelPerfectClick = true
-        tile.events.onInputOver.add(over, this)
-        tile.events.onInputOut.add(out, this)
-        // if (zoomable) tile.events.onInputUp.add(clicked, this)
-
-        return tile
+    setAnchor(sprite) {
+        sprite.anchor.x = 0.5
+        sprite.anchor.y = this.tileCenterHeight / this.tileSpriteHeight
     }
 
-    createTiles(group, center, zoomable=true) {
-        let N = this.rings-1,
-            {x:cx,y:cy,z:cz} = center
+    // commonTile(tile) {
+    //     tile.coords = coords
+    //     tile.map = this
+    //     tile.inputEnabled = true
+    //     tile.input.useHandCursor = true
+    //     tile.input.pixelPerfectOver = true
+    //     tile.events.onInputOver.add(over, this)
+    //     tile.events.onInputOut.add(out, this)
+    // }
 
-        for (var dz=-N; dz <= N; dz++) {
-            for (var dx=Math.max(-N, -dz-N); dx <= Math.min(N, -dz+N); dx++) {
-                let dy = -dx-dz
-                let cubic = {x: cx+dx, y: cy+dy, z: cz+dz}
-                this.createTile(
-                    group,
-                    cubeToAxial(cubic),
-                    zoomable
-                )
-            }
-        }
+    // createFarTile(group, coords) {
+    //     let pixelCoords = this.axialToPixelFlat(coords),
+    //         noiseCoords = this.toNearCoords(coords),
+
+    //         noise = getNoise(noiseCoords.x, noiseCoords.y),
+    //         tile = this.addSprite(group, pixelCoords)
+
+
+    //     tile.frame = 18
+    //     if (noise > .1) tile.frame = 17
+    //     if (noise > .6) tile.frame = 16
+    //     if (noise > .8) tile.frame = 15
+    //     if (noise > .9) tile.frame = 15
+
+    //     // tile.input.pixelPerfectClick = true
+    //     // tile.events.onInputUp.add(clicked, this)
+
+    //     return tile
+    // }
+
+    // createNearTile(group, coords, sector) {
+    //     let pixelCoords = this.axialToPixelPointy(coords),
+    //         noiseCoords = coords
+
+    //     let noise = getNoise(noiseCoords.x, noiseCoords.y)
+    //     let tile = this.addSprite(group, pixelCoords)
+    //     tile.coords = coords
+    //     tile.map = this
+
+    //     tile.sector = sector
+
+    //     tile.frame = 3
+    //     if (noise > .1) tile.frame = 2
+    //     if (noise > .6) tile.frame = 1
+    //     if (noise > .8) tile.frame = 0
+    //     if (noise > .9) tile.frame = 0
+
+    //     // let d = cubeDistance(axialToCube(coords), {x:0,y:0,z:0})
+    //     // if (d <= (this.rings-1)) tile.alpha=0.75
+    //     // if (d <= (this.rings-this.transitionRings-1)) tile.alpha=0.85
+    //     // tile.alpha = Math.abs(sector.x)/5 + Math.abs(sector.y)/10
+
+    //     return tile
+    // }
+
+    createFarTiles(center) {
+        forEachHexInDist(
+            center,
+            this.rings-1,
+            (coords) => new FarTile(this, coords, this.farMapGroup)
+        )
+    }
+
+    createNearTiles(center) {
+        let sector = this.toFarCoords(center)
+        console.log('NEAR!', center)
+        forEachHexInDist(
+            center,
+            this.rings-1,
+            (coords) => new NearTile(this, coords, this.nearMapGroup, sector)
+        )
     }
 
     zoomInCoords(coords) {
+        console.log(coords, this.getTile(this.farMapGroup, coords.x, coords.y).coords)
         this.zoomInTile(this.getTile(this.farMapGroup, coords.x, coords.y))
     }
 
@@ -274,11 +272,7 @@ export class Map {
             this.nearRootGroup.sort('z', Phaser.Group.SORT_ASCENDING)
             this.centerViewport(this.zoomedCoordsNear)
             this.updateIconCoords()
-            this.createTiles(
-                this.nearMapGroup,
-                axialToCube(this.zoomedCoordsNear),
-                false
-            )
+            this.createNearTiles(axialToCube(this.zoomedCoordsNear))
             this.displayOnlyNearUnits()
         }
     }
@@ -343,25 +337,30 @@ export class Map {
         return axialDistance(coords, this.zoomedCoordsNear) < this.rings
     }
 
-    checkSectorChange(coords) {
+    // If needed, change current displayed sector to better acomodate
+    // coords.
+    // Returns:
+    // - the new sector, if it whas changed
+    // - false if no change was needed
+    // - null if attepted change, but was out of world
+    changeSector(coords) {
         let d = axialDistance(coords, this.zoomedCoordsNear)
         if (d > this.hardRings) {
             let newSector = this.getNearestSector(coords)
             if (newSector) this.zoomInCoords(newSector)
-            else return null
+            return newSector
         }
+        return false
     }
 
     moveUnit(coords, direction) {
         let newCoords = translate(coords, direction)
 
         // Cheap check first
-        if (axialDistance(newCoords) <= this.safeDist) {
-            return newCoords
-        } else {
-            if (this.getNearestSector(newCoords)) return newCoords
-            else return coords
+        if (axialDistance(newCoords) > this.safeDist) {
+            if (!this.getNearestSector(newCoords)) throw 'outOfWorld'
         }
+        return newCoords
     }
 
     update(input) {
