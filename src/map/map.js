@@ -182,61 +182,6 @@ export class Map {
         sprite.anchor.y = this.tileCenterHeight / this.tileSpriteHeight
     }
 
-    // commonTile(tile) {
-    //     tile.coords = coords
-    //     tile.map = this
-    //     tile.inputEnabled = true
-    //     tile.input.useHandCursor = true
-    //     tile.input.pixelPerfectOver = true
-    //     tile.events.onInputOver.add(over, this)
-    //     tile.events.onInputOut.add(out, this)
-    // }
-
-    // createFarTile(group, coords) {
-    //     let pixelCoords = this.axialToPixelFlat(coords),
-    //         noiseCoords = this.toNearCoords(coords),
-
-    //         noise = getNoise(noiseCoords.x, noiseCoords.y),
-    //         tile = this.addSprite(group, pixelCoords)
-
-
-    //     tile.frame = 18
-    //     if (noise > .1) tile.frame = 17
-    //     if (noise > .6) tile.frame = 16
-    //     if (noise > .8) tile.frame = 15
-    //     if (noise > .9) tile.frame = 15
-
-    //     // tile.input.pixelPerfectClick = true
-    //     // tile.events.onInputUp.add(clicked, this)
-
-    //     return tile
-    // }
-
-    // createNearTile(group, coords, sector) {
-    //     let pixelCoords = this.axialToPixelPointy(coords),
-    //         noiseCoords = coords
-
-    //     let noise = getNoise(noiseCoords.x, noiseCoords.y)
-    //     let tile = this.addSprite(group, pixelCoords)
-    //     tile.coords = coords
-    //     tile.map = this
-
-    //     tile.sector = sector
-
-    //     tile.frame = 3
-    //     if (noise > .1) tile.frame = 2
-    //     if (noise > .6) tile.frame = 1
-    //     if (noise > .8) tile.frame = 0
-    //     if (noise > .9) tile.frame = 0
-
-    //     // let d = cubeDistance(axialToCube(coords), {x:0,y:0,z:0})
-    //     // if (d <= (this.rings-1)) tile.alpha=0.75
-    //     // if (d <= (this.rings-this.transitionRings-1)) tile.alpha=0.85
-    //     // tile.alpha = Math.abs(sector.x)/5 + Math.abs(sector.y)/10
-
-    //     return tile
-    // }
-
     createFarTiles(center) {
         forEachHexInDist(
             center,
@@ -247,7 +192,6 @@ export class Map {
 
     createNearTiles(center) {
         let sector = this.toFarCoords(center)
-        console.log('NEAR!', center)
         forEachHexInDist(
             center,
             this.rings-1,
@@ -256,7 +200,6 @@ export class Map {
     }
 
     zoomInCoords(coords) {
-        console.log(coords, this.getTile(this.farMapGroup, coords.x, coords.y).coords)
         this.zoomInTile(this.getTile(this.farMapGroup, coords.x, coords.y))
     }
 

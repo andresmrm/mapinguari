@@ -22,10 +22,11 @@ function clicked(tile) {
 
 
 export class Tile extends Phaser.Sprite {
-    constructor (map, coords, group) {
-        super(map.game, coords.x, coords.y, 'tiles')
+    constructor (map, pixelCoords, mapCoords, group) {
+        super(map.game, pixelCoords.x, pixelCoords.y, 'tiles')
+        group.add(this)
 
-        this.coords = coords
+        this.coords = mapCoords
         this.map = map
         this.map.setAnchor(this)
 
@@ -34,19 +35,17 @@ export class Tile extends Phaser.Sprite {
         this.input.pixelPerfectOver = true
         this.events.onInputOver.add(over, this)
         this.events.onInputOut.add(out, this)
-
-        group.add(this)
     }
 }
 
 
 export class FarTile extends Tile {
-    constructor (map, coords, group) {
-        let pixelCoords = map.axialToPixelFlat(coords),
-            noiseCoords = map.toNearCoords(coords),
+    constructor (map, mapCoords, group) {
+        let pixelCoords = map.axialToPixelFlat(mapCoords),
+            noiseCoords = map.toNearCoords(mapCoords),
             noise = getNoise(noiseCoords.x, noiseCoords.y)
 
-        super(map, pixelCoords, group)
+        super(map, pixelCoords, mapCoords, group)
 
         this.frame = 18
         if (noise > .1) this.frame = 17
@@ -61,12 +60,12 @@ export class FarTile extends Tile {
 
 
 export class NearTile extends Tile {
-    constructor (map, coords, group, sector) {
-        let pixelCoords = map.axialToPixelPointy(coords),
-            noiseCoords = coords,
+    constructor (map, mapCoords, group, sector) {
+        let pixelCoords = map.axialToPixelPointy(mapCoords),
+            noiseCoords = mapCoords,
             noise = getNoise(noiseCoords.x, noiseCoords.y)
 
-        super(map, pixelCoords, group)
+        super(map, pixelCoords, mapCoords, group)
 
         this.sector = sector
 
