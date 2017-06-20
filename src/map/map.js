@@ -11,6 +11,7 @@ import Cutter from '../units/cutter'
 import Businessman from '../units/businessman'
 
 import Heightmap from './heightmap'
+import Store from './store'
 import {FarTile, NearTile} from './tiles'
 import {pointyDirections, createGroup, axialDistance, cubeToAxial, axialToCube,
         invMatrix, cubeRound, translate, forEachHexInDist} from './utils'
@@ -31,9 +32,13 @@ export class Map {
 
         // TODO: Allow different number of far and near rings
         this.rings = 8
+        this.farRings = this.rings
+        this.nearRings = this.rings
 
-        this.mapTopOffset = 0
-        this.mapLeftOffset = 0
+        this.numTilesPerSector = 3*this.nearRings*this.nearRings-3*this.nearRings+1
+
+        // this.mapTopOffset = 0
+        // this.mapLeftOffset = 0
         this.mapTopOffset = this.rings*this.tileHeight
         this.mapLeftOffset = this.rings*this.tileWidth
 
@@ -75,6 +80,12 @@ export class Map {
 
         this.heightmap = new Heightmap(this)
 
+        this.needToUpdateNearMap = false
+        this.needToUpdateFarMap = []
+
+        this.microData = new Store({
+            devastation: 0,
+        })
 
         // safeDist is used to optimize out of map check.
         // If unit distance to origin is <= safedist, it's not out of map.
@@ -82,6 +93,9 @@ export class Map {
         let r = this.rings,
             t = this.transitionRings
         this.safeDist = r-1 + Math.floor(r/2)*(r+Math.floor(t/2)-t) + Math.floor((r-1)/2)*(2*r-1-t)
+
+        // TODO: Debug
+        window.map = this
     }
 
     // From near to far coords
@@ -101,9 +115,9 @@ export class Map {
     }
 
     // From near coords to far rounded coords
-    toSector(coords) {
-        // return cubeToAxial(cubeRound(axialToCube(this.toFarCoords(coords))))
-        return this.toFarCoords(coords)
+    toSectorCoords(coords) {
+        return cubeToAxial(cubeRound(axialToCube(this.toFarCoords(coords))))
+        // return this.toFarCoords(coords)
     }
 
     // Center viewport to an axial coord
@@ -119,20 +133,20 @@ export class Map {
     }
 
     generate () {
-        this.createFarTiles({x:0, y:0, z:0})
+        this.createFarTiles({x:0, y:0})
         this.toggleHeighmap()
         this.closeFarMap()
         let initial = {x:0, y:0}
         this.player = new Player(this, initial)
         this.zoomInCoords(initial)
 
-        this.playerIcon = this.addSprite(this.farUnitsGroup, initial, this.player.tile)
-        this.game.add.tween(this.playerIcon).to( { alpha: 0.2 }, 1000, Phaser.Easing.Linear.None, true, 0, 1000, true)
+        this.playerIcon = this.addSprite(
+            this.farUnitsGroup, initial, this.player.tile)
+        // Shine the icon
+        this.game.add.tween(this.playerIcon).to(
+            { alpha: 0.2 }, 1000, Phaser.Easing.Linear.None,
+            true, 0, 1000, true)
 
-        new Cattle(this, {x:2,y:2})
-        new Cattle(this, {x:4,y:4})
-        new Cattle(this, {x:0,y:4})
-        new Cattle(this, {x:0,y:-2})
         new Cutter(this, {x:1,y:-2})
         new Businessman(this, {x:3,y:-2})
     }
@@ -140,7 +154,7 @@ export class Map {
     updateIconCoords() {
         if (this.playerIcon) {
             let icon = this.playerIcon,
-                screenCoords = this.axialToPixelFlat(this.zoomedCoordsFar)
+                screenCoords = this.axialToPixelFlat(this.zoomedSector.coords)
             icon.x = screenCoords.x
             icon.y = screenCoords.y
         }
@@ -151,9 +165,10 @@ export class Map {
     }
 
     // receives axial coords and get the right tile from the group array
-    getTile(group, x, y) {
-        return group.getAt(
-            x + y*(4*this.rings-Math.abs(y)-1)/2 + Math.floor(group.length/2)
+    getSector(coords) {
+        return this.farMapGroup.getAt(
+            coords.x + coords.y*(4*this.rings-Math.abs(coords.y)-1)/2 +
+                Math.floor(this.farMapGroup.length/2)
         )
     }
 
@@ -191,7 +206,7 @@ export class Map {
     }
 
     createNearTiles(center) {
-        let sector = this.toFarCoords(center)
+        let sector = this.getSector(this.toFarCoords(center))
         forEachHexInDist(
             center,
             this.rings-1,
@@ -200,22 +215,22 @@ export class Map {
     }
 
     zoomInCoords(coords) {
-        this.zoomInTile(this.getTile(this.farMapGroup, coords.x, coords.y))
+        this.zoomInSector(this.getSector(coords))
     }
 
-    zoomInTile(tile) {
-        if (this.zoomedCoordsFar != tile.coords) {
+    zoomInSector(sector) {
+        if (this.zoomedSector != sector) {
             if (this.nearMapGroup) {
                 this.nearMapGroup.destroy()
             }
             this.nearMapGroup = createGroup(this, this.nearRootGroup)
             this.nearMapGroup.z = 1
-            this.zoomedCoordsFar = tile.coords
-            this.zoomedCoordsNear = this.toNearCoords(tile.coords)
+            this.zoomedSector = sector
+            this.zoomedCoordsNear = this.toNearCoords(sector.coords)
             this.nearRootGroup.sort('z', Phaser.Group.SORT_ASCENDING)
             this.centerViewport(this.zoomedCoordsNear)
             this.updateIconCoords()
-            this.createNearTiles(axialToCube(this.zoomedCoordsNear))
+            this.createNearTiles(this.zoomedCoordsNear)
             this.displayOnlyNearUnits()
         }
     }
@@ -235,9 +250,26 @@ export class Map {
         else this.openFarMap()
     }
 
+    // Ignores if is near to map border
+    getNearestSectorCoords(coords) {
+        return this.getNearestSectorAndDist(coords).nearestNeighbor
+    }
+
     getNearestSector(coords) {
-        // Uses zoomedCoordsFar as starting point for neighbors ! NOT ANYMORE
-        // let far = this.zoomedCoordsFar,
+        return this.getSector(this.getNearestSectorCoords(coords))
+    }
+
+    getNearestSectorChecking(coords) {
+        let {nearestNeighbor, d} = this.getNearestSectorAndDist(coords)
+
+        // Check if is leaving map (the nearest valid sector is too far)
+        if (d < this.rings)
+            return nearestNeighbor
+        else
+            return null
+    }
+
+    getNearestSectorAndDist(coords) {
         let far = cubeToAxial(cubeRound(axialToCube(this.toFarCoords(coords)))),
             d = axialDistance(this.toNearCoords(far), coords),
             nearestNeighbor = far,
@@ -265,11 +297,7 @@ export class Map {
             }
         }
 
-        // Check if is leaving map (the nearest valid sector is too far)
-        if (d < this.rings)
-            return nearestNeighbor
-        else
-            return null
+        return {nearestNeighbor, d}
     }
 
     displayOnlyNearUnits() {
@@ -289,7 +317,7 @@ export class Map {
     changeSector(coords) {
         let d = axialDistance(coords, this.zoomedCoordsNear)
         if (d > this.hardRings) {
-            let newSector = this.getNearestSector(coords)
+            let newSector = this.getNearestSectorChecking(coords)
             if (newSector) this.zoomInCoords(newSector)
             return newSector
         }
@@ -301,11 +329,61 @@ export class Map {
 
         // Cheap check first
         if (axialDistance(newCoords) > this.safeDist) {
-            if (!this.getNearestSector(newCoords)) throw 'outOfWorld'
+            if (!this.getNearestSectorChecking(newCoords)) throw 'outOfWorld'
         }
         return newCoords
     }
 
     update(input) {
+        // This avoids updating near maps multiple times per turn.
+        if (this.needToUpdateNearMap) {
+            this.updateNearMap()
+            this.needToUpdateNearMap = false
+        }
+
+        // This avoids updating far maps multiple times per turn or
+        // when it's not visible.
+        if (this.farRootGroup.visible && this.needToUpdateFarMap.length) {
+            this.needToUpdateFarMap.forEach((sector) => {sector.updateFrame()})
+            this.needToUpdateFarMap = []
+        }
+    }
+
+    // Update all tiles in near map
+    updateNearMap() {
+        this.nearMapGroup.forEach((tile) => tile.updateFrame())
+    }
+
+    devastate(coords, range) {
+        forEachHexInDist(
+            coords, range,
+            (coords) => {
+                this.microData.get(coords, true).devastation++
+
+                if (axialDistance(coords, this.zoomedCoordsNear) < this.nearRings)
+                    this.needToUpdateNearMap = true
+
+                let sector = this.getSector(this.toSectorCoords(coords))
+                if (sector != -1 && this.needToUpdateFarMap.indexOf(sector) == -1)
+                    this.needToUpdateFarMap.push(sector)
+            })
+    }
+
+    // TODO: Não estava usando os 4 tiles! Pelo menos o n=3 era muito raro. Mas assim talvez ultrapasse o valor válido...
+    // Returns florest level for a near tile
+    getNearFlorestLevel(coords) {
+        let noise = getNoise(coords.x, coords.y),
+            level = Math.round(noise*3+1) - this.microData.get(coords).devastation
+        return level<0 ? 0 : level
+    }
+    getFarFlorestLevel(coords, noise) {
+        let devastation = 0
+        forEachHexInDist(
+            this.toNearCoords(coords),
+            this.nearRings-1,
+            (coords) => {devastation += this.microData.get(coords).devastation}
+        )
+        let level = Math.round(noise*3+1) - devastation/this.numTilesPerSector
+        return level<0 ? 0 : level
     }
 }

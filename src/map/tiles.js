@@ -1,7 +1,7 @@
 import Phaser from 'phaser-ce'
 
 import {getNoise} from '../noiser'
-import {cubeToAxial, axialToCube, cubeRound} from './utils'
+import {cubeToAxial, axialToCube, cubeRound, forEachHexInDist, axialDistance} from './utils'
 
 
 function over(tile) {
@@ -31,7 +31,7 @@ export class Tile extends Phaser.Sprite {
         this.map.setAnchor(this)
 
         this.inputEnabled = true
-        this.input.useHandCursor = true
+        // this.input.useHandCursor = true
         this.input.pixelPerfectOver = true
         this.events.onInputOver.add(over, this)
         this.events.onInputOut.add(out, this)
@@ -47,14 +47,25 @@ export class FarTile extends Tile {
 
         super(map, pixelCoords, mapCoords, group)
 
-        this.frame = 18
-        if (noise > .1) this.frame = 17
-        if (noise > .6) this.frame = 16
-        if (noise > .8) this.frame = 15
-        if (noise > .9) this.frame = 15
+        this.noise = 0
+
+        forEachHexInDist(
+            map.toNearCoords(mapCoords),
+            this.map.nearRings-1,
+            (coords) => {this.noise += getNoise(coords.x, coords.y)}
+        )
+
+        this.noise = this.noise/this.map.numTilesPerSector
+        this.devastation = 0
+
+        this.updateFrame()
 
         // this.input.pixelPerfectClick = true
         // this.events.onInputUp.add(clicked, this)
+    }
+
+    updateFrame() {
+        this.frame = this.map.getFarFlorestLevel(this.coords, this.noise) + 15
     }
 }
 
@@ -62,22 +73,29 @@ export class FarTile extends Tile {
 export class NearTile extends Tile {
     constructor (map, mapCoords, group, sector) {
         let pixelCoords = map.axialToPixelPointy(mapCoords),
-            noiseCoords = mapCoords,
-            noise = getNoise(noiseCoords.x, noiseCoords.y)
+            noiseCoords = mapCoords
 
         super(map, pixelCoords, mapCoords, group)
 
         this.sector = sector
+        // this.noise = getNoise(noiseCoords.x, noiseCoords.y)
 
-        this.frame = 3
-        if (noise > .1) this.frame = 2
-        if (noise > .6) this.frame = 1
-        if (noise > .8) this.frame = 0
-        if (noise > .9) this.frame = 0
+        this.updateFrame()
 
         // let d = cubeDistance(axialToCube(coords), {x:0,y:0,z:0})
         // if (d <= (this.rings-1)) this.alpha=0.75
         // if (d <= (this.rings-this.transitionRings-1)) this.alpha=0.85
         // this.alpha = Math.abs(sector.x)/5 + Math.abs(sector.y)/10
+    }
+
+    updateFrame() {
+        this.frame = this.map.getNearFlorestLevel(this.coords)
+        // this.frame = 0
+        // if (this.noise > .1) this.frame = 2
+        // if (this.noise > .6) this.frame = 1
+        // if (this.noise > .8) this.frame = 0
+        // let newValue = this.frame - this.map.microData.get(this.coords).devastation
+        // if (newValue < 0) this.frame = 0
+        // else this.frame = newValue
     }
 }

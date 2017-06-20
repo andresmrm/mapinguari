@@ -5,11 +5,12 @@ import Unit from './unit'
 export default class Player extends Unit {
     constructor (map, coords) {
         super(map, coords, 31)
-        this.moveThrottleTime = 100
+        this.actionThrottleTime = 150
     }
 
     playerMove(direction) {
-        if(this.throttleMove(direction, this.moveThrottleTime)) {
+        // if(this.throttleMove(direction, this.moveThrottleTime)) {
+        if(this.move(direction)) {
             this.map.changeSector(this.coords)
             // if (config.centerPlayer) this.map.centerViewport(this.coords)
         }
@@ -18,7 +19,7 @@ export default class Player extends Unit {
     triedToLeaveWorld() {
     }
 
-    update() {
+    live() {
         if (this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
             this.playerMove('nw')
         } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.T)) {

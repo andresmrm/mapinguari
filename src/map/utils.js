@@ -23,10 +23,13 @@ export var pointyDirections = {
     nw: {x:0, y:-1},
 }
 
+var pointyDirArray = []
+Object.keys(pointyDirections).forEach(
+    (key) => pointyDirArray.push(pointyDirections[key]))
+
 
 export function getRandomDirection() {
-    let keys = Object.keys(pointyDirections)
-    return keys[ keys.length * random() << 0]
+    return pointyDirArray[pointyDirArray.length * random() << 0]
 }
 
 
@@ -105,7 +108,7 @@ export function invMatrix(m) {
 
 // Calls a function for each hex in N distance from center
 export function forEachHexInDist(center, N, fn) {
-    let {x:cx,y:cy,z:cz} = center
+    let {x:cx,y:cy,z:cz} = axialToCube(center)
 
     for (var dz=-N; dz <= N; dz++) {
         for (var dx=Math.max(-N, -dz-N); dx <= Math.min(N, -dz+N); dx++) {
@@ -117,6 +120,45 @@ export function forEachHexInDist(center, N, fn) {
 }
 
 
+export function axialScale(coords, mult) {
+    return {x:coords.x*mult, y:coords.y*mult}
+}
+
+export function axialAdd(a, b) {
+    return {x:a.x+b.x, y:a.y+b.y}
+}
+
+
+export function findNearest(center, maxRadius, testFn) {
+    // test center
+    if (testFn(center)) return center
+
+    // test each ring, from inside to outside
+    for (let ringRadius=1;ringRadius<maxRadius;ringRadius++) {
+
+        let initialDir = getRandomDirection(),
+            coord = axialAdd(center, axialScale(initialDir, ringRadius))
+
+        // iterate each side of the ring
+        for (let iDir=0; iDir < 6; iDir++) {
+            // iterate along each hex that makes a side of the ring
+            for (let i=0; i < ringRadius; i++) {
+                if (testFn(coord)) return coord
+
+                // Gets the right direction to walk along this side.
+                // It should be 2 positions ahead in the directions array.
+                // Also, it should be added by the side direction iterator (iDir).
+                // The % is used to avoid indexes bigger than the array.
+                let sideDir = pointyDirArray[(
+                    pointyDirArray.indexOf(initialDir)+2+iDir
+                )%pointyDirArray.length]
+
+                coord = axialAdd(coord, sideDir)
+            }
+        }
+    }
+    return null
+}
 
 
 // // oddq_to_cube

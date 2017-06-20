@@ -3,7 +3,7 @@ import Phaser from 'phaser-ce'
 import {Map} from '../map/map'
 import {axialToCube, axialDistance} from '../map/utils'
 
-export default class extends Phaser.State {
+export default class Game extends Phaser.State {
     init () {}
     preload () {}
 
@@ -25,6 +25,34 @@ export default class extends Phaser.State {
             if(e.keyCode == Phaser.Keyboard.H) this.map.toggleHeighmap()
             if(e.keyCode == Phaser.Keyboard.Z) this.toggleDebugInfo()
         }
+
+
+
+
+
+
+        let resize = () => {
+            this.game.scale.setGameSize(window.innerWidth, window.innerHeight)
+            let scaleH = window.innerHeight / this.map.mapTopOffset/2,
+                scaleW = window.innerWidth / this.map.mapLeftOffset/2,
+                scale = Math.min(scaleH, scaleW)
+            this.game.world.scale.setTo(scale, scale)
+        }
+
+        // Resizes game on window resize
+        // based on: http://www.html5gamedevs.com/topic/13900-doubt-about-making-my-game-responsive-on-onresize/
+        // The delay is supposed to help on some devices
+        window.addEventListener('resize',
+                                () => this.game.time.events.add(200, resize),
+                                false)
+
+        resize()
+
+
+
+
+
+
     }
 
     toggleDebugInfo() {
@@ -75,7 +103,7 @@ export default class extends Phaser.State {
                 this.game.debug.text(text, 2, h, "#ffffff")
                 h += 20
 
-                let roundedPos = this.map.toSector(this.map.player.coords)
+                let roundedPos = this.map.toSectorCoords(this.map.player.coords)
                 text = 'Player Sector: ' + roundedPos.x + ',' + roundedPos.y
                 this.game.debug.text(text, 2, h, "#ffffff")
                 h += 20
