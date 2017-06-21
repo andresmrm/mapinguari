@@ -22,6 +22,7 @@ export default class Player extends Unit {
     }
 
     live() {
+        // Check move keys and move
         let moveKeys = config.keybinds.move,
             moved = false
         Object.keys(moveKeys).forEach(

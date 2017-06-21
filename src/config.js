@@ -1,11 +1,8 @@
 import Phaser from 'phaser-ce'
 
 export default {
-    // gameWidth: 810,
-    // gameHeight: 600,
-    // gameWidth: 1420,
-    // gameHeight: 1000,
     localStorageName: 'mapinguari',
+    language: 'en',
     keybinds: {
         // move: {
         //     ne: Phaser.Keyboard.E,
