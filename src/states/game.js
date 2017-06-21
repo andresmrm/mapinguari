@@ -1,5 +1,6 @@
 /* globals __DEV__ */
 import Phaser from 'phaser-ce'
+import config from '../config'
 import {Map} from '../map/map'
 import {axialToCube, axialDistance} from '../map/utils'
 
@@ -22,9 +23,9 @@ export default class Game extends Phaser.State {
 
         this.input.keyboard.onUpCallback = (e) => {
             console.log(e.keyCode)
-            if(e.keyCode == Phaser.Keyboard.M) this.map.toggleFarMap()
+            if(e.keyCode == config.keybinds.map) this.map.toggleFarMap()
             if(e.keyCode == Phaser.Keyboard.H) this.map.toggleHeighmap()
-            if(e.keyCode == Phaser.Keyboard.Z) this.toggleDebugInfo()
+            if(e.keyCode == Phaser.Keyboard.G) this.toggleDebugInfo()
         }
 
 
@@ -52,8 +53,8 @@ export default class Game extends Phaser.State {
     }
 
     render () {
-        var style = {font: "16px fixed", fill: "#eeeeee"};
-        this.game.add.text(0,0,"My Custom Fção Works", style);
+        // var style = {font: "16px fixed", fill: "#eeeeee"};
+        // this.game.add.text(0,0,"My Custom Fção Works", style);
         if (this.showDebugInfo) {
             let h = 20
             this.game.debug.text(this.game.time.fps, 2, h, "#ffffff");
@@ -116,19 +117,19 @@ export default class Game extends Phaser.State {
     }
 
     update () {
-        let speed = 5
+        // let speed = 5
 
-        if (this.cursors.left.isDown) {
-            this.game.camera.x = this.game.camera.x - speed
-        } else if (this.cursors.right.isDown) {
-            this.game.camera.x = this.game.camera.x + speed
-        }
+        // if (this.cursors.left.isDown) {
+        //     this.game.camera.x = this.game.camera.x - speed
+        // } else if (this.cursors.right.isDown) {
+        //     this.game.camera.x = this.game.camera.x + speed
+        // }
 
-        if (this.cursors.up.isDown) {
-            this.game.camera.y = this.game.camera.y - speed
-        } else if (this.cursors.down.isDown) {
-            this.game.camera.y = this.game.camera.y + speed
-        }
+        // if (this.cursors.up.isDown) {
+        //     this.game.camera.y = this.game.camera.y - speed
+        // } else if (this.cursors.down.isDown) {
+        //     this.game.camera.y = this.game.camera.y + speed
+        // }
 
         this.map.update(this.input)
     }

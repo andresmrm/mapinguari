@@ -1,5 +1,6 @@
 import Phaser from 'phaser-ce'
 import Unit from './unit'
+import config from '../config'
 
 
 export default class Player extends Unit {
@@ -17,21 +18,19 @@ export default class Player extends Unit {
     }
 
     triedToLeaveWorld() {
+        // Avoids being destroyed.
     }
 
     live() {
-        if (this.game.input.keyboard.isDown(Phaser.Keyboard.W)) {
-            this.playerMove('nw')
-        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.T)) {
-            this.playerMove('ne')
-        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.D)) {
-            this.playerMove('w')
-        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.S)) {
-            this.playerMove('e')
-        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.V)) {
-            this.playerMove('sw')
-        } else if (this.game.input.keyboard.isDown(Phaser.Keyboard.G)) {
-            this.playerMove('se')
-        }
+        let moveKeys = config.keybinds.move,
+            moved = false
+        Object.keys(moveKeys).forEach(
+            (dir) => {
+                if (!moved && this.game.input.keyboard.isDown(moveKeys[dir])) {
+                    this.playerMove(dir)
+                    moved = true
+                }
+            }
+        )
     }
 }
