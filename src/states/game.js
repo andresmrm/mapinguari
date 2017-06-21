@@ -21,14 +21,11 @@ export default class Game extends Phaser.State {
         this.cursors = this.input.keyboard.createCursorKeys()
 
         this.input.keyboard.onUpCallback = (e) => {
+            console.log(e.keyCode)
             if(e.keyCode == Phaser.Keyboard.M) this.map.toggleFarMap()
             if(e.keyCode == Phaser.Keyboard.H) this.map.toggleHeighmap()
             if(e.keyCode == Phaser.Keyboard.Z) this.toggleDebugInfo()
         }
-
-
-
-
 
 
         let resize = () => {
@@ -37,22 +34,17 @@ export default class Game extends Phaser.State {
                 scaleW = window.innerWidth / this.map.mapLeftOffset/2,
                 scale = Math.min(scaleH, scaleW)
             this.game.world.scale.setTo(scale, scale)
+            this.map.centerMapOnScreen(
+                window.innerHeight/scale, window.innerWidth/scale)
         }
 
         // Resizes game on window resize
         // based on: http://www.html5gamedevs.com/topic/13900-doubt-about-making-my-game-responsive-on-onresize/
         // The delay is supposed to help on some devices
-        window.addEventListener('resize',
-                                () => this.game.time.events.add(200, resize),
-                                false)
+        window.addEventListener(
+            'resize', () => this.game.time.events.add(200, resize), false)
 
         resize()
-
-
-
-
-
-
     }
 
     toggleDebugInfo() {
@@ -60,6 +52,8 @@ export default class Game extends Phaser.State {
     }
 
     render () {
+        var style = {font: "16px fixed", fill: "#eeeeee"};
+        this.game.add.text(0,0,"My Custom Fção Works", style);
         if (this.showDebugInfo) {
             let h = 20
             this.game.debug.text(this.game.time.fps, 2, h, "#ffffff");

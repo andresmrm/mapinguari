@@ -7,6 +7,7 @@ export default class Unit {
         this.game = map.game
         this.coords = coords
         this.tile = tile
+        this.fleeingFrame = this.tile
         this.sprite = this.map.addUnit(this)
         this.sprite.update = () => this.update()
         this.sprite.unit = this
@@ -45,6 +46,7 @@ export default class Unit {
 
     // Called when the unit tried to leave the world
     triedToLeaveWorld() {
+        console.log('Out!')
         this.destroy()
     }
 

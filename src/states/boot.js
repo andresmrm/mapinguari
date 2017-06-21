@@ -21,9 +21,11 @@ export default class Boot extends Phaser.State {
 
     this.load.image('loaderBg', './assets/images/loader-bg.png')
     this.load.image('loaderBar', './assets/images/loader-bar.png')
+
   }
 
   render () {
+      this.game.add.text(0, 0, "hack", {font:"1px fixed", fill:"#FFFFFF"});
     // if (this.fontsReady) {
     //   this.state.start('Splash')
     // }

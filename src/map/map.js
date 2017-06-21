@@ -37,15 +37,10 @@ export class Map {
 
         this.numTilesPerSector = 3*this.nearRings*this.nearRings-3*this.nearRings+1
 
-        // this.mapTopOffset = 0
-        // this.mapLeftOffset = 0
         this.mapTopOffset = this.rings*this.tileHeight
         this.mapLeftOffset = this.rings*this.tileWidth
 
         this.rootGroup = createGroup(this)
-        this.rootGroup.x = this.mapLeftOffset
-        this.rootGroup.y = this.mapTopOffset
-        // this.centerViewport({x:0,y:0})
 
         this.nearRootGroup = createGroup(this, this.rootGroup)
         this.nearUnitsGroup = createGroup(this, this.nearRootGroup)
@@ -125,6 +120,11 @@ export class Map {
         let screen = this.axialToPixelPointy(center)
         this.nearRootGroup.x = -screen.x
         this.nearRootGroup.y = -screen.y
+    }
+
+    centerMapOnScreen(height, width) {
+        this.rootGroup.x = width/2
+        this.rootGroup.y = height/2
     }
 
     addUnit(unit) {
