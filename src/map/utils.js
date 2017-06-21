@@ -25,7 +25,8 @@ export var pointyDirections = {
 
 var pointyDirArray = []
 Object.keys(pointyDirections).forEach(
-    (key) => pointyDirArray.push(pointyDirections[key]))
+    (key) => pointyDirArray.push(pointyDirections[key])
+)
 
 
 export function getRandomDirection() {
