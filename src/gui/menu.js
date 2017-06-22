@@ -38,19 +38,35 @@ export default class Menu {
     }
 
     keypress (event) {
-        var keynum;
-        if(window.event) { // IE
-            keynum = event.keyCode;
-        } else if(event.which){ // Netscape/Firefox/Opera
-            keynum = event.which;
-        }
+        this.handleKeypress(event)
+    }
 
-        let key = String.fromCharCode(keynum),
+    getKeyCode (event) {
+        if(window.event) { // IE
+            return event.keyCode;
+        } else if(event.which){ // Netscape/Firefox/Opera
+            return event.which
+        } else {
+            throw 'no method to decode key code'
+        }
+    }
+
+    keyCodeToString(keyCode) {
+        return String.fromCharCode(keyCode)
+    }
+
+    handleKeypress (event) {
+        var keynum = this.getKeyCode(event),
+            key = this.keyCodeToString(keynum),
             fn = this.hotkeys[key]
         if (fn) fn()
     }
 
     close () {
         this.manager.close()
+    }
+
+    reload () {
+        this.manager.replace([this.name])
     }
 }

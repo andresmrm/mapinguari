@@ -27,6 +27,7 @@ export default class Player extends Unit {
             moved = false
         Object.keys(moveKeys).forEach(
             (dir) => {
+                // console.log(moveKeys[dir], this.game.input.keyboard.isDown(moveKeys[dir]))
                 if (!moved && this.game.input.keyboard.isDown(moveKeys[dir])) {
                     this.playerMove(dir)
                     moved = true

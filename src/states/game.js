@@ -18,6 +18,7 @@ export default class Game extends Phaser.State {
 
         this.input.keyboard.onUpCallback = (e) => {
             if(this.map) {
+                console.log('GAME', e.keyCode, String.fromCharCode(e.keyCode), e.which)
                 if(e.keyCode == config.keybinds.map) this.map.toggleFarMap()
                 if(e.keyCode == Phaser.Keyboard.H) this.map.toggleHeighmap()
                 if(e.keyCode == Phaser.Keyboard.G) this.toggleDebugInfo()
@@ -56,8 +57,10 @@ export default class Game extends Phaser.State {
     }
 
     toggleMenu () {
-        this.game.gui.add(['gamemenu'])
-        this.game.paused = true
+        if (!this.game.paused) {
+            this.game.gui.add(['gamemenu'])
+            this.game.paused = true
+        }
     }
 
     render () {

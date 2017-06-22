@@ -22,6 +22,10 @@ export default class Instructions extends Menu {
         this.addText('-mapkey')
         this.addText(String.fromCharCode(keys.map))
 
+        this.addButton('change hotkeys', () => {
+            this.manager.add(['hotkeys'])
+        })
+
         this.addButton('back', () => {
             this.manager.close()
         })

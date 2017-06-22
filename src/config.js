@@ -1,8 +1,9 @@
 import Phaser from 'phaser-ce'
 
-export default {
+let defaultConfig = {
     localStorageName: 'mapinguari',
-    language: 'en',
+    language: null,
+    defaultLang: 'en',
     keybinds: {
         // move: {
         //     ne: Phaser.Keyboard.E,
@@ -23,3 +24,22 @@ export default {
         map: Phaser.Keyboard.M,
     }
 }
+
+let config = null,
+    storeName = defaultConfig.localStorageName
+
+// Saves configs
+function saveConfig() {
+    localStorage[storeName] = JSON.stringify(config)
+}
+
+if (localStorage[storeName]) {
+    // Loads previous saved configs
+    config = JSON.parse(localStorage[storeName])
+} else {
+    // No save configs found, use default config
+    config = defaultConfig
+}
+config.save = saveConfig
+
+export default config

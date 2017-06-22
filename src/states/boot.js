@@ -1,4 +1,5 @@
 import Phaser from 'phaser-ce'
+import config from '../config'
 // import WebFont from 'webfontloader'
 
 export default class Boot extends Phaser.State {
@@ -23,7 +24,9 @@ export default class Boot extends Phaser.State {
         this.load.image('loaderBar', './assets/images/loader-bar.png')
 
 
-        this.game.gui.add(['langPicker', 'history1'])
+        let menus = ['history1']
+        if (!config.language) menus.unshift('langPicker')
+        this.game.gui.add(menus)
     }
 
     render () {

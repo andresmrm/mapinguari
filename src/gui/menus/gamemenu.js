@@ -8,15 +8,24 @@ export default class GameMenu extends Menu {
     }
 
     open () {
-        this.addTitle('menu')
+        this.addTitle('-title')
         this.addButton('instructions', () => {
             this.manager.add(['instructions'])
+        })
+        this.addButton('language', () => {
+            this.manager.add(['langPicker'])
+        })
+        this.addButton('change hotkeys', () => {
+            this.manager.add(['hotkeys'])
         })
         this.addButton('restart game', () => {
             this.manager.restartGame()
             this.close()
         })
-        this.addButton('voltar', () => {
+        this.addButton('about', () => {
+            this.manager.add(['about'])
+        })
+        this.addButton('back', () => {
             this.close()
         })
     }

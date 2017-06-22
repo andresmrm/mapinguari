@@ -10,11 +10,20 @@ export default class Intro extends Menu {
     open () {
         this.addTitle('-title')
         this.addText('-history')
-        this.addButton('start', () => {
-            this.manager.close()
-        })
         this.addButton('instructions', () => {
             this.manager.add(['instructions'])
+        })
+        this.addButton('language', () => {
+            this.manager.add(['langPicker'])
+        })
+        this.addButton('change hotkeys', () => {
+            this.manager.add(['hotkeys'])
+        })
+        this.addButton('about', () => {
+            this.manager.add(['about'])
+        })
+        this.addButton('start', () => {
+            this.manager.close()
         })
     }
 }

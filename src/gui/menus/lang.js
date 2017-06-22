@@ -11,10 +11,12 @@ export default class LangPicker extends Menu {
     open () {
         this.addButton('english', () => {
             config.language = 'en'
+            config.save()
             this.close()
         })
         this.addButton('português', () => {
             config.language = 'pt'
+            config.save()
             this.close()
         })
     }
