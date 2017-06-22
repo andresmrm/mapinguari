@@ -8,6 +8,9 @@ import WaitStartState from './states/waitstart'
 import GameState from './states/game'
 
 import config from './config'
+import gui from './gui/gui'
+import {startNoiseGen} from './noiser'
+
 
 class Game extends Phaser.Game {
     constructor () {
@@ -17,12 +20,20 @@ class Game extends Phaser.Game {
 
         super(width, height, Phaser.AUTO, 'content', null, false, false)
 
+        this.gui = gui
+        this.gui.game = this
+
         this.state.add('Boot', BootState, false)
         this.state.add('Splash', SplashState, false)
         this.state.add('WaitStart', WaitStartState, false)
         this.state.add('Game', GameState, false)
 
         this.state.start('Boot')
+    }
+
+    restart () {
+        startNoiseGen()
+        this.state.restart('Game')
     }
 }
 

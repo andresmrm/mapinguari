@@ -386,4 +386,11 @@ export class Map {
         let level = Math.round(noise*3+1) - devastation/this.numTilesPerSector
         return level<0 ? 0 : level
     }
+
+    destroy() {
+        this.rootGroup.destroy()
+        this.heightmap.destroy()
+        this.microData.destroy()
+        delete this
+    }
 }

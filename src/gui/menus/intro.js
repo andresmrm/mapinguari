@@ -11,10 +11,10 @@ export default class Intro extends Menu {
         this.addTitle('-title')
         this.addText('-history')
         this.addButton('start', () => {
-            this.manager.startGame()
+            this.manager.close()
         })
         this.addButton('instructions', () => {
-            this.manager.replace(['instructions'])
+            this.manager.add(['instructions'])
         })
     }
 }

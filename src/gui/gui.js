@@ -20,6 +20,7 @@ class Gui {
             this.menusPile.unshift(this.menus[name])
         }
         if (this.menusPile.length) {
+            this.clear()
             this.menusPile[0].open()
             this.show()
         }
@@ -40,7 +41,10 @@ class Gui {
         this.clear()
         this.menusPile.shift()
         if (this.menusPile.length) this.menusPile[0].open()
-        else this.hide()
+        else {
+            this.hide()
+            this.startGame()
+        }
     }
 
     hide () {
@@ -58,8 +62,12 @@ class Gui {
 
 
     startGame() {
-        this.close()
         this.game.readyToStart = true
+        this.game.paused = false
+    }
+
+    restartGame() {
+        this.game.restart()
     }
 }
 

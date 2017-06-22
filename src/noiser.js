@@ -2,7 +2,13 @@ import SimplexNoise from 'simplex-noise'
 import Alea from 'alea'
 
 export var random = new Alea()
-var noiseGen = new SimplexNoise(random)
+
+var noiseGen = null
+export function startNoiseGen() {
+    noiseGen = new SimplexNoise(random)
+}
+startNoiseGen()
+
 
 // band weights
 var w1 = 1, w2 = 1, w3 = 1

@@ -1,6 +1,5 @@
 import Phaser from 'phaser-ce'
 // import WebFont from 'webfontloader'
-import gui from '../gui/gui'
 
 export default class Boot extends Phaser.State {
     init () {
@@ -24,8 +23,7 @@ export default class Boot extends Phaser.State {
         this.load.image('loaderBar', './assets/images/loader-bar.png')
 
 
-        gui.add(['langPicker', 'history1'])
-        gui.game = this.game
+        this.game.gui.add(['langPicker', 'history1'])
     }
 
     render () {

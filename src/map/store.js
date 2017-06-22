@@ -23,4 +23,9 @@ export default class Store {
         }
         return value
     }
+
+    destroy() {
+        this.store = {}
+        delete this
+    }
 }

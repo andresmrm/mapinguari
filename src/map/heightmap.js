@@ -23,21 +23,27 @@ export default class Heightmap {
                 this.bitmap.rect(x, y, 1, 1, color)
             }
         }
-        this.heightmapSprite = this.map.game.add.sprite(0, 0, this.bitmap)
-        this.heightmapSprite.alpha = 0.3
-        this.heightmapSprite.z = 10
+        this.sprite = this.map.game.add.sprite(0, 0, this.bitmap)
+        this.sprite.alpha = 0.3
+        this.sprite.z = 10
     }
 
     hide() {
-        this.heightmapSprite.kill()
+        this.sprite.kill()
     }
 
     show() {
-        this.heightmapSprite.revive()
+        this.sprite.revive()
     }
 
     toggle() {
-        if (this.heightmapSprite.alive) this.hide()
+        if (this.sprite.alive) this.hide()
         else this.show()
+    }
+
+    destroy() {
+        this.bitmap.destroy()
+        this.sprite.destroy()
+        delete this
     }
 }
