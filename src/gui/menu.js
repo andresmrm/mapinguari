@@ -25,6 +25,8 @@ export default class Menu {
         let node = document.createElement('a'),
             text = t(textName)
 
+        node.classList.add('button')
+
         if (!hotkey) hotkey = text[0]
         node.innerHTML = text.replace(
             hotkey, `<span class="hotkey-mark">${hotkey}</span>`)

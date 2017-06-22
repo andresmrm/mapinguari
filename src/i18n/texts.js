@@ -5,7 +5,7 @@ export default {
     },
     '-history': {
         en: 'Save the Amazon!',
-        pt: 'O Mapinguari é uma das criaturas míticas da Amazônia. Geralmente ele não se preocupa muito em proteger a floresta. Mas na velocidade em que ela tem sido destruída atualmente, ele não teve muita escolha.'
+        pt: 'O <a href="https://pt.wikipedia.org/wiki/Mapinguari" target="_blank">Mapinguari</a> é uma das criaturas míticas da Amazônia. Geralmente ele não se preocupa muito em proteger a floresta. Mas na velocidade em que ela tem sido destruída atualmente, ele não teve muita escolha.'
     },
     '-movekeys': {
         en: 'Use these keys to move:',
@@ -14,6 +14,10 @@ export default {
     '-mapkey': {
         en: 'And this to open the map:',
         pt: 'E essa para abrir o mapa:'
+    },
+    '-defmapinguari': {
+        en: 'https://en.wikipedia.org/wiki/Mapinguari',
+        pt: 'https://pt.wikipedia.org/wiki/Mapinguari'
     },
     '-instructions': {
         en: 'Move! Scare!',
