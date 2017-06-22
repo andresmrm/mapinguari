@@ -24,7 +24,8 @@ export default class Boot extends Phaser.State {
         this.load.image('loaderBar', './assets/images/loader-bar.png')
 
 
-        gui.open('langPicker')
+        gui.add(['langPicker', 'history1'])
+        gui.game = this.game
     }
 
     render () {

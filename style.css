@@ -11,6 +11,14 @@ body {
     background-color: #111;
     color: white;
     font-family: fixed;
+    font-size: 32px;
+}
+
+h1 {
+    font-size: 48px;
+    text-align: center;
+    margin-top: 0px;
+    text-transform: capitalize;
 }
 
 #gui-container {
@@ -29,4 +37,18 @@ body {
     max-width: 40rem;
     background-color: #6abe30;
     border: solid 0.5rem #323c39;
+    pointer-events: auto;
+    display: none;
+}
+
+a {
+    display: block;
+}
+
+a:hover {
+    color: red;
+}
+
+.hotkey-mark {
+    color: red;
 }

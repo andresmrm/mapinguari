@@ -3,16 +3,65 @@ import * as Menus from './menus';
 
 class Gui {
     constructor () {
+        this.root = document.querySelector('#gui-content')
+        this.menusPile = []
         this.menus = {}
         Object.keys(Menus).forEach((menuCls) => {
-            let menu = new Menus[menuCls]()
+            let menu = new Menus[menuCls](this)
             this.menus[menu.name] = menu
         })
+
+        document.onkeypress = this.keypress.bind(this)
     }
 
-    open (name) {
-        this.menus[name].open()
+    // Add menus to the menusPile. Open the first menu on the list.
+    add (names) {
+        for (let name of names.reverse()) {
+            this.menusPile.unshift(this.menus[name])
+        }
+        if (this.menusPile.length) {
+            this.menusPile[0].open()
+            this.show()
+        }
+    }
+
+    // Replace current menu by names. Open the first one.
+    replace (names) {
+        this.clear()
+        this.menusPile.shift()
+        this.add(names)
+    }
+
+    clear () {
+        this.root.innerHTML = ''
+    }
+
+    close () {
+        this.clear()
+        this.menusPile.shift()
+        if (this.menusPile.length) this.menusPile[0].open()
+        else this.hide()
+    }
+
+    hide () {
+        this.root.style.display = 'none'
+    }
+
+    show () {
+        this.root.style.display = 'block'
+    }
+
+    keypress (event) {
+        if (this.menusPile.length)
+            this.menusPile[0].keypress(event)
+    }
+
+
+    startGame() {
+        this.close()
+        this.game.readyToStart = true
     }
 }
 
-export default new Gui()
+var gui = new Gui()
+export default gui

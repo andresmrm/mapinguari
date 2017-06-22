@@ -15,6 +15,6 @@ export default class Splash extends Phaser.State {
     }
 
     create () {
-        this.state.start('Game')
+        this.state.start('WaitStart')
     }
 }

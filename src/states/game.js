@@ -10,24 +10,21 @@ export default class Game extends Phaser.State {
 
     create () {
         this.stage.backgroundColor = '#111'
-        // this.game.world.scale.setTo(3, 3)
-        // this.game.world.scale.setTo(2, 2)
         this.input.useHandCursor = true
         this.time.advancedTiming = true
         this.stage.disableVisibilityChange = false
 
-        this.map = new Map(this)
-        this.map.generate()
-
         this.cursors = this.input.keyboard.createCursorKeys()
 
         this.input.keyboard.onUpCallback = (e) => {
-            console.log(e.keyCode)
-            if(e.keyCode == config.keybinds.map) this.map.toggleFarMap()
-            if(e.keyCode == Phaser.Keyboard.H) this.map.toggleHeighmap()
-            if(e.keyCode == Phaser.Keyboard.G) this.toggleDebugInfo()
+            if(this.map) {
+                if(e.keyCode == config.keybinds.map) this.map.toggleFarMap()
+                if(e.keyCode == Phaser.Keyboard.H) this.map.toggleHeighmap()
+                if(e.keyCode == Phaser.Keyboard.G) this.toggleDebugInfo()
+            }
         }
 
+        this.startMap()
 
         let resize = () => {
             this.game.scale.setGameSize(window.innerWidth, window.innerHeight)
@@ -46,6 +43,11 @@ export default class Game extends Phaser.State {
             'resize', () => this.game.time.events.add(200, resize), false)
 
         resize()
+    }
+
+    startMap () {
+        this.map = new Map(this)
+        this.map.generate()
     }
 
     toggleDebugInfo() {

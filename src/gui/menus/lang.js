@@ -1,13 +1,21 @@
-import t from '../../i18n/i18n'
+import Menu from '../menu'
+import config from '../../config'
 
-export default class {
-    constructor () {
+
+export default class LangPicker extends Menu {
+    constructor (manager) {
+        super(manager)
         this.name = 'langPicker'
     }
 
     open () {
-        let el = document.querySelector('#gui-content')
-        let te = t('title')
-        el.innerHTML = '<h1>'+te+'</h1>'
+        this.addButton('english', () => {
+            config.language = 'en'
+            this.close()
+        })
+        this.addButton('português', () => {
+            config.language = 'pt'
+            this.close()
+        })
     }
 }

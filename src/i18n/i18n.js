@@ -3,5 +3,8 @@ import config from '../config'
 
 
 export default function (textName) {
-    return texts[textName][config.language]
+    let el = texts[textName],
+        text = null
+    if (el) text = el[config.language]
+    return text ? text : textName
 }
