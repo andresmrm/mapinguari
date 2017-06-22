@@ -17,8 +17,7 @@ export default class Game extends Phaser.State {
         this.cursors = this.input.keyboard.createCursorKeys()
 
         this.input.keyboard.onUpCallback = (e) => {
-            if(this.map) {
-                console.log('GAME', e.keyCode, String.fromCharCode(e.keyCode), e.which)
+            if(this.map && !this.game.paused) {
                 if(e.keyCode == config.keybinds.map) this.map.toggleFarMap()
                 if(e.keyCode == Phaser.Keyboard.H) this.map.toggleHeighmap()
                 if(e.keyCode == Phaser.Keyboard.G) this.toggleDebugInfo()

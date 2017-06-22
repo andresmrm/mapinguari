@@ -1,3 +1,4 @@
+import {keyCodeToStr} from '../utils'
 import t from '../i18n/i18n'
 
 export default class Menu {
@@ -51,13 +52,9 @@ export default class Menu {
         }
     }
 
-    keyCodeToString(keyCode) {
-        return String.fromCharCode(keyCode)
-    }
-
     handleKeypress (event) {
         var keynum = this.getKeyCode(event),
-            key = this.keyCodeToString(keynum),
+            key = keyCodeToStr(keynum),
             fn = this.hotkeys[key]
         if (fn) fn()
     }

@@ -3,3 +3,7 @@ export const centerGameObjects = (objects) => {
     object.anchor.setTo(0.5)
   })
 }
+
+export function keyCodeToStr(keyCode) {
+    return String.fromCharCode(keyCode)
+}

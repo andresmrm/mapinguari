@@ -1,3 +1,4 @@
+import {keyCodeToStr} from '../../utils'
 import config from '../../config'
 import t from '../../i18n/i18n'
 import Menu from '../menu'
@@ -26,20 +27,19 @@ export default class ChangeHotkeys extends Menu {
         let keys = config.keybinds
         Object.keys(keys.move).forEach((dir, i) => {
             let text = (i+1) + ' ' + t(directions[dir]) + ': '
-            text += this.keyCodeToString(keys.move[dir]).toUpperCase()
+            text += keyCodeToStr(keys.move[dir]).toUpperCase()
             this.addButton(text, () => {
-                this.changingKey = (keyCode) => {
-                    console.log('CHANGE', keyCode, String.fromCharCode(keyCode))
-                    keys.move[dir] = keyCode
+                this.changingKey = (char) => {
+                    keys.move[dir] = char
                 }
             })
         })
 
         let text = t('open map') + ': '
-        text += this.keyCodeToString(keys.map).toUpperCase()
+        text += keyCodeToStr(keys.map).toUpperCase()
         this.addButton(text, () => {
-            this.changingKey = (keyCode) => {
-                keys.map = keyCode
+            this.changingKey = (char) => {
+                keys.map = char
             }
         })
 
@@ -52,7 +52,12 @@ export default class ChangeHotkeys extends Menu {
 
     keypress (event) {
         if (this.changingKey) {
-            this.changingKey(this.getKeyCode(event))
+            // Converts key code to string to uppercase and convert
+            // back to key code. This avoids problems with Phaser, that
+            // uses uppercase codes.
+            this.changingKey(
+                keyCodeToStr(this.getKeyCode(event)).toUpperCase().charCodeAt(0)
+            )
             this.changingKey = null
             config.save()
             this.reload()
