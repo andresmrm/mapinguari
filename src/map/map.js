@@ -4,7 +4,7 @@
 
 import Phaser from 'phaser-ce'
 
-import {getNoise} from '../noiser'
+import {randInt, getNoise} from '../noiser'
 import Player from '../units/player'
 import Cattle from '../units/cattle'
 import Cutter from '../units/cutter'
@@ -147,8 +147,8 @@ export class Map {
             { alpha: 0.2 }, 1000, Phaser.Easing.Linear.None,
             true, 0, 1000, true)
 
-        new Cutter(this, {x:1,y:-2})
-        new Businessman(this, {x:3,y:-2})
+        // new Cutter(this, {x:1,y:-2})
+        new Businessman(this, this.getRandomCoords(this.nearRings))
     }
 
     updateIconCoords() {
@@ -385,6 +385,23 @@ export class Map {
         )
         let level = Math.round(noise*3+1) - devastation/this.numTilesPerSector
         return level<0 ? 0 : level
+    }
+
+    // Get a random coords `dist` far from player
+    getRandomCoords(dist=0) {
+        let found = false
+
+        while (!found) {
+            var sectorCoords = this.farMapGroup.getRandom().coords,
+                {x,y} = this.toNearCoords(sectorCoords)
+            x += randInt(this.nearRings)
+            y += randInt(this.nearRings)
+            if(axialDistance(this.player.coords, {x, y}) >= dist) {
+                found = true
+            }
+        }
+
+        return {x,y}
     }
 
     destroy() {

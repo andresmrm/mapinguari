@@ -28,3 +28,8 @@ export function getNoise(x, y) {
 export function randTrue(prop) {
     return random() > prop ? true : false
 }
+
+
+export function randInt(end, start=0) {
+    return Math.round(random()*(end-start)+start)
+}
