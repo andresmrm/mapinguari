@@ -106814,7 +106814,7 @@ function getNoise(x, y) {
 }
 
 function randTrue(prop) {
-    return random() > prop ? true : false;
+    return random() < prop ? true : false;
 }
 
 function randInt(end) {
@@ -107477,6 +107477,7 @@ var Unit = function () {
         this.initialFear = 6;
         this.fear = this.initialFear;
         this.actionThrottleTime = 150;
+        this.isFleeing = false;
         this.checkUnitInViewport();
     }
 
@@ -107500,6 +107501,12 @@ var Unit = function () {
             }
             return true;
         }
+    }, {
+        key: 'playSound',
+        value: function playSound(name) {
+            var volume = 1 / (0, _utils.axialDistance)(this.coords, this.map.player.coords) ** .3;
+            if (volume > 0.1) this.map.game.playSound(name, volume);
+        }
 
         // Move towards a coords
 
@@ -107517,7 +107524,7 @@ var Unit = function () {
     }, {
         key: 'triedToLeaveWorld',
         value: function triedToLeaveWorld() {
-            console.log('Out!');
+            this.playSound('out');
             this.destroy();
         }
     }, {
@@ -107579,6 +107586,8 @@ var Unit = function () {
         value: function flee() {
             var playerCoords = this.map.player.coords;
             if ((0, _utils.axialDistance)(playerCoords, this.coords) < this.fear / 2) {
+                if (!this.isFleeing) this.playSound(this.fleeSound);
+                this.isFleeing = true;
                 this.sprite.frame = this.fleeingFrame;
                 if ((0, _noiser.randTrue)(0.5)) this.fear += 1;
                 var dx = this.coords.x - playerCoords.x,
@@ -107586,6 +107595,7 @@ var Unit = function () {
                 this.move({ x: Math.sign(dx), y: Math.sign(dy) });
                 return true;
             } else {
+                this.isFleeing = false;
                 this.sprite.frame = this.tile;
                 if ((0, _noiser.randTrue)(0.99) && this.fear > this.initialFear) this.fear--;
                 return false;
@@ -108964,9 +108974,13 @@ Object.defineProperty(exports, "__esModule", {
     value: true
 });
 
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
 var _unit = __webpack_require__(/*! ./unit */ 55);
 
 var _unit2 = _interopRequireDefault(_unit);
+
+var _noiser = __webpack_require__(/*! ../noiser */ 34);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -108982,8 +108996,19 @@ var Cattle = function (_Unit) {
     function Cattle(map, coords) {
         _classCallCheck(this, Cattle);
 
-        return _possibleConstructorReturn(this, (Cattle.__proto__ || Object.getPrototypeOf(Cattle)).call(this, map, coords, 34));
+        var _this = _possibleConstructorReturn(this, (Cattle.__proto__ || Object.getPrototypeOf(Cattle)).call(this, map, coords, 34));
+
+        _this.fleeSound = 'moo';
+        return _this;
     }
+
+    _createClass(Cattle, [{
+        key: 'notFleeing',
+        value: function notFleeing() {
+            this.wanderer();
+            if ((0, _noiser.randTrue)(0.01)) this.playSound('moo');
+        }
+    }]);
 
     return Cattle;
 }(_unit2.default);
@@ -109014,6 +109039,8 @@ var _unit2 = _interopRequireDefault(_unit);
 
 var _utils = __webpack_require__(/*! ../map/utils */ 44);
 
+var _noiser = __webpack_require__(/*! ../noiser */ 34);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -109034,6 +109061,7 @@ var Cutter = function (_Unit) {
         _this.cutting = 0;
         _this.map.destroyers += 1;
         _this.devastationRange = 2;
+        _this.fleeSound = 'ohh';
         return _this;
     }
 
@@ -109068,7 +109096,9 @@ var Cutter = function (_Unit) {
         key: 'cutTrees',
         value: function cutTrees() {
             this.cutting += 1;
+            if ((0, _noiser.randTrue)(0.1)) this.playSound('saw', this.coords);
             if (this.cutting > 10) {
+                this.playSound('fallingtree', this.coords);
                 this.map.devastate(this.coords, this.devastationRange);
                 this.cutting = 0;
             }
@@ -112238,6 +112268,22 @@ var Game = function (_Phaser$State) {
             }, false);
 
             resize();
+
+            this.audio = this.game.add.audioSprite('audios');
+            this.audio.play = function (marker, volume) {
+                if (volume === undefined) {
+                    volume = 1;
+                }
+                this.sounds[marker].allowMultiple = true;
+                return this.sounds[marker].play(marker, null, volume, false, false);
+            };
+
+            this.playSound('rrr');
+        }
+    }, {
+        key: 'playSound',
+        value: function playSound(name, volume) {
+            this.audio.play(name, volume);
         }
     }, {
         key: 'startMap',
@@ -112421,6 +112467,7 @@ var Splash = function (_Phaser$State) {
             this.load.setPreloadSprite(this.loaderBar);
 
             this.load.spritesheet('tiles', 'assets/images/tiles.png', 32, 48);
+            this.load.audioSprite('audios', 'assets/audios/sprite.ogg', 'assets/audios/sprite.json');
         }
     }, {
         key: 'create',
@@ -112536,6 +112583,7 @@ var Businessman = function (_Unit) {
         var _this = _possibleConstructorReturn(this, (Businessman.__proto__ || Object.getPrototypeOf(Businessman)).call(this, map, coords, 33));
 
         _this.fleeingFrame = 35;
+        _this.fleeSound = 'ahh';
         _this.map.destroyers += 1;
         return _this;
     }
@@ -112549,9 +112597,10 @@ var Businessman = function (_Unit) {
     }, {
         key: 'notFleeing',
         value: function notFleeing() {
-            if ((0, _noiser.randTrue)(0.99)) {
+            if ((0, _noiser.randTrue)(0.95)) {
                 this.wanderer();
             } else {
+                this.playSound('new');
                 if ((0, _noiser.randTrue)(0.5)) new _cutter2.default(this.map, (0, _utils.axialAdd)(this.coords, (0, _utils.getRandomDirection)()));else new _cattle2.default(this.map, (0, _utils.axialAdd)(this.coords, (0, _utils.getRandomDirection)()));
             }
         }

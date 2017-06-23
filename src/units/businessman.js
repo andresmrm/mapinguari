@@ -8,6 +8,7 @@ export default class Businessman extends Unit {
     constructor (map, coords) {
         super(map, coords, 33)
         this.fleeingFrame = 35
+        this.fleeSound = 'ahh'
         this.map.destroyers += 1
     }
 
@@ -17,9 +18,10 @@ export default class Businessman extends Unit {
     }
 
     notFleeing() {
-        if (randTrue(0.99)) {
+        if (randTrue(0.95)) {
             this.wanderer()
         } else {
+            this.playSound('new')
             if (randTrue(0.5))
                 new Cutter(this.map, axialAdd(this.coords, getRandomDirection()))
             else

@@ -1,0 +1,47 @@
+{
+  "resources": [
+    "assets/audios/sprite.ogg"
+  ],
+  "spritemap": {
+    "ahh": {
+      "start": 0,
+      "end": 0.9833333333333333,
+      "loop": false
+    },
+    "fallingtree": {
+      "start": 2,
+      "end": 3.4419274376417235,
+      "loop": false
+    },
+    "moo": {
+      "start": 5,
+      "end": 6.137777777777778,
+      "loop": false
+    },
+    "new": {
+      "start": 8,
+      "end": 8.18721088435374,
+      "loop": false
+    },
+    "ohh": {
+      "start": 10,
+      "end": 11.157482993197279,
+      "loop": false
+    },
+    "out": {
+      "start": 13,
+      "end": 13.275124716553288,
+      "loop": false
+    },
+    "rrr": {
+      "start": 15,
+      "end": 15.907868480725623,
+      "loop": false
+    },
+    "saw": {
+      "start": 17,
+      "end": 17.936780045351473,
+      "loop": false
+    }
+  }
+}

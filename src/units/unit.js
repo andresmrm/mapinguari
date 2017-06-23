@@ -16,6 +16,7 @@ export default class Unit {
         this.initialFear = 6
         this.fear = this.initialFear
         this.actionThrottleTime = 150
+        this.isFleeing = false
         this.checkUnitInViewport()
     }
 
@@ -37,6 +38,11 @@ export default class Unit {
         return true
     }
 
+    playSound(name) {
+        let volume = 1 / axialDistance(this.coords, this.map.player.coords)**(.3)
+        if (volume > 0.1) this.map.game.playSound(name, volume)
+    }
+
     // Move towards a coords
     moveTo(coords) {
         let dx = coords.x - this.coords.x,
@@ -47,7 +53,7 @@ export default class Unit {
 
     // Called when the unit tried to leave the world
     triedToLeaveWorld() {
-        console.log('Out!')
+        this.playSound('out')
         this.destroy()
     }
 
@@ -95,6 +101,8 @@ export default class Unit {
     flee() {
         var playerCoords = this.map.player.coords
         if (axialDistance(playerCoords, this.coords) < this.fear/2) {
+            if (!this.isFleeing) this.playSound(this.fleeSound)
+            this.isFleeing = true
             this.sprite.frame = this.fleeingFrame
             if (randTrue(0.5)) this.fear += 1
             let dx = this.coords.x - playerCoords.x,
@@ -102,6 +110,7 @@ export default class Unit {
             this.move({x: Math.sign(dx), y: Math.sign(dy)})
             return true
         } else {
+            this.isFleeing = false
             this.sprite.frame = this.tile
             if (randTrue(0.99) && this.fear > this.initialFear) this.fear--
             return false

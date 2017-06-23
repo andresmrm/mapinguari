@@ -26,7 +26,7 @@ export function getNoise(x, y) {
 
 
 export function randTrue(prop) {
-    return random() > prop ? true : false
+    return random() < prop ? true : false
 }
 
 

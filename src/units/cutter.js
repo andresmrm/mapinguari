@@ -1,5 +1,6 @@
 import Unit from './unit'
 import {getRandomDirection, findNearest} from '../map/utils'
+import {randTrue} from '../noiser'
 
 export default class Cutter extends Unit {
     constructor (map, coords) {
@@ -8,6 +9,7 @@ export default class Cutter extends Unit {
         this.cutting = 0
         this.map.destroyers += 1
         this.devastationRange = 2
+        this.fleeSound = 'ohh'
     }
 
     notFleeing() {
@@ -33,7 +35,9 @@ export default class Cutter extends Unit {
 
     cutTrees() {
         this.cutting += 1
+        if(randTrue(0.1))this.playSound('saw', this.coords)
         if (this.cutting > 10) {
+            this.playSound('fallingtree', this.coords)
             this.map.devastate(this.coords, this.devastationRange)
             this.cutting = 0
         }

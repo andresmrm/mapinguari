@@ -12,6 +12,8 @@ export default class Splash extends Phaser.State {
         this.load.setPreloadSprite(this.loaderBar)
 
         this.load.spritesheet('tiles', 'assets/images/tiles.png', 32, 48)
+        this.load.audioSprite('audios', 'assets/audios/sprite.ogg',
+                              'assets/audios/sprite.json')
     }
 
     create () {

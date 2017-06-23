@@ -44,6 +44,19 @@ export default class Game extends Phaser.State {
             'resize', () => this.game.time.events.add(200, resize), false)
 
         resize()
+
+        this.audio = this.game.add.audioSprite('audios')
+        this.audio.play = function (marker, volume) {
+            if (volume === undefined) { volume = 1; }
+            this.sounds[marker].allowMultiple = true
+            return this.sounds[marker].play(marker, null, volume, false, false)
+        }
+
+        this.playSound('rrr')
+    }
+
+    playSound(name, volume) {
+        this.audio.play(name, volume)
     }
 
     startMap () {
