@@ -16,6 +16,7 @@ export default class Unit {
         this.initialFear = 6
         this.fear = this.initialFear
         this.actionThrottleTime = 150
+        this.checkUnitInViewport()
     }
 
     updateSpriteCoords() {

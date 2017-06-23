@@ -377,9 +377,11 @@ export class Map {
             this.needToUpdateNearMap = false
         }
 
-        // This avoids updating far maps multiple times per turn or
-        // when it's not visible.
-        if (this.farRootGroup.visible && this.needToUpdateFarMap.length) {
+        // This avoids updating far maps multiple times per turn.
+        // It's not checking for farRootGroup visibility because
+        // end game check needs this info updated.
+        // if (this.farRootGroup.visible && this.needToUpdateFarMap.length) {
+        if (this.needToUpdateFarMap.length) {
             this.needToUpdateFarMap.forEach((sector) => {sector.updateFrame()})
             this.needToUpdateFarMap = []
         }

@@ -107477,6 +107477,7 @@ var Unit = function () {
         this.initialFear = 6;
         this.fear = this.initialFear;
         this.actionThrottleTime = 150;
+        this.checkUnitInViewport();
     }
 
     _createClass(Unit, [{
@@ -111692,9 +111693,11 @@ var Map = exports.Map = function () {
                 this.needToUpdateNearMap = false;
             }
 
-            // This avoids updating far maps multiple times per turn or
-            // when it's not visible.
-            if (this.farRootGroup.visible && this.needToUpdateFarMap.length) {
+            // This avoids updating far maps multiple times per turn.
+            // It's not checking for farRootGroup visibility because
+            // end game check needs this info updated.
+            // if (this.farRootGroup.visible && this.needToUpdateFarMap.length) {
+            if (this.needToUpdateFarMap.length) {
                 this.needToUpdateFarMap.forEach(function (sector) {
                     sector.updateFrame();
                 });
