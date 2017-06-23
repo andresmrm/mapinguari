@@ -1,3 +1,5 @@
+import config from '../config'
+
 export default {
     '-title': {
         en: 'The Fearsome Mapinguari',
@@ -19,13 +21,33 @@ export default {
         en: 'And this to open the map:',
         pt: 'E essa para abrir o mapa:'
     },
-    '-defmapinguari': {
-        en: 'https://en.wikipedia.org/wiki/Mapinguari',
-        pt: 'https://pt.wikipedia.org/wiki/Mapinguari'
-    },
     '-instructions': {
-        en: 'Kick out the destroyers of the forest!',
-        pt: 'Expulse os destruidores da floresta!',
+        en: `Kick out the destroyers of the forest! Don\'t let the devastation level get above ${config.maxDevastation}%, or the forest will be doomed.`,
+        pt: `Expulse os destruidores da floresta! Não deixe o nível de devastação ultrapassar os ${config.maxDevastation}%, ou a foresta estará condenada.`,
+    },
+    '-win': {
+        en: 'The forest is still alive!',
+        pt: 'A floresta permance viva!',
+    },
+    'we won!': {
+        en: '',
+        pt: 'ganhamos!',
+    },
+    '-defeat': {
+        en: 'The forest is doomed!',
+        pt: 'A floresta está condenada!',
+    },
+    'we lost!': {
+        en: '',
+        pt: 'perdemos!',
+    },
+    'next month': {
+        en: '',
+        pt: 'proximo mês',
+    },
+    'month': {
+        en: '',
+        pt: 'mês',
     },
     'change hotkeys': {
         en: '',
@@ -62,5 +84,37 @@ export default {
     menu: {
         en: '',
         pt: '',
+    },
+    'open map': {
+        en: '',
+        pt: 'abrir mapa',
+    },
+    'top left': {
+        en: '',
+        pt: 'cima esquerda',
+    },
+    'left': {
+        en: '',
+        pt: 'esquerda',
+    },
+    'bottom left': {
+        en: '',
+        pt: 'baixo esquerda',
+    },
+    'bottom right': {
+        en: '',
+        pt: 'baixo direita',
+    },
+    'right': {
+        en: '',
+        pt: 'direita',
+    },
+    'top right': {
+        en: '',
+        pt: 'cima direita',
+    },
+    'destroyers': {
+        en: '',
+        pt: 'destruidores',
     },
 }

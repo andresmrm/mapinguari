@@ -5,24 +5,17 @@ let defaultConfig = {
     language: null,
     defaultLang: 'en',
     keybinds: {
-        // move: {
-        //     ne: Phaser.Keyboard.E,
-        //     e: Phaser.Keyboard.D,
-        //     se: Phaser.Keyboard.C,
-        //     sw: Phaser.Keyboard.Z,
-        //     w: Phaser.Keyboard.A,
-        //     nw: Phaser.Keyboard.Q,
-        // },
         move: {
-            ne: Phaser.Keyboard.C,
-            e: Phaser.Keyboard.R,
-            se: Phaser.Keyboard.F,
-            sw: Phaser.Keyboard.V,
-            w: Phaser.Keyboard.D,
-            nw: Phaser.Keyboard.W,
+            ne: Phaser.Keyboard.E,
+            e: Phaser.Keyboard.D,
+            se: Phaser.Keyboard.C,
+            sw: Phaser.Keyboard.Z,
+            w: Phaser.Keyboard.A,
+            nw: Phaser.Keyboard.Q,
         },
         map: Phaser.Keyboard.M,
-    }
+    },
+    maxDevastation: 50,
 }
 
 let config = null,

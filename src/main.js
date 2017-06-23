@@ -35,6 +35,11 @@ class Game extends Phaser.Game {
         startNoiseGen()
         this.state.restart('Game')
     }
+
+    nextLevel () {
+        this.state.states.Game.nextMonth()
+    }
 }
 
 window.game = new Game()
+window.config = config

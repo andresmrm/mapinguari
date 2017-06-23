@@ -8,10 +8,16 @@ export default class Businessman extends Unit {
     constructor (map, coords) {
         super(map, coords, 33)
         this.fleeingFrame = 35
+        this.map.destroyers += 1
+    }
+
+    destroy() {
+        this.map.destroyers -= 1
+        this.sprite.destroy()
     }
 
     notFleeing() {
-        if (randTrue(0.8)) {
+        if (randTrue(0.99)) {
             this.wanderer()
         } else {
             if (randTrue(0.5))

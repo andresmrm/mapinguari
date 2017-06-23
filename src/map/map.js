@@ -4,6 +4,8 @@
 
 import Phaser from 'phaser-ce'
 
+import config from '../config'
+import t from '../i18n/i18n'
 import {randInt, getNoise} from '../noiser'
 import Player from '../units/player'
 import Cattle from '../units/cattle'
@@ -68,6 +70,13 @@ export class Map {
         ]
         // Multiply this by vector to scale from near to far
         this.nearToFarMatrix = invMatrix(this.farToNearMatrix)
+
+        // Time when last throttled update happended
+        this.last_throttledUpdate = 0
+
+        this.destroyers = 0
+        this.month = 1
+        this.gameEnded = false
 
         // TODO: Remove? Only heightmap uses this?
         this.rows = this.rings*2-1
@@ -147,8 +156,35 @@ export class Map {
             { alpha: 0.2 }, 1000, Phaser.Easing.Linear.None,
             true, 0, 1000, true)
 
-        // new Cutter(this, {x:1,y:-2})
-        new Businessman(this, this.getRandomCoords(this.nearRings))
+        this.generateDestroyers()
+
+        this.textDev = this.game.add.text(10,30,'')
+        this.textDes = this.game.add.text(
+            10,50,'', {font: "16px fixed", fill: '#ffffff'})
+        this.textMon = this.game.add.text(
+            10,10,'', {font: "16px fixed", fill: '#ffffff'})
+    }
+
+    generateDestroyers() {
+        for (let i=0; i<this.month;i++) {
+            new Businessman(this, this.getRandomCoords(this.nearRings))
+            // new Cutter(this, this.getRandomCoords(this.nearRings))
+        }
+    }
+
+    updateText() {
+        this.updatePercDevastated()
+        this.textDev.setText(`${t("devastation")} : ${this.devastation}%`)
+        let nonred = 255-(this.devastation/config.maxDevastation)*255
+        if (nonred<0) nonred = 0
+        let color = `rgb(255,${nonred},${nonred})`
+        this.textDev.setStyle({font: "16px fixed", fill: color})
+
+        this.textDes.setText(
+            `${t("destroyers")} : ${this.destroyers}`
+        )
+
+        this.textMon.setText(`${t('month')} : ${this.month}`)
     }
 
     updateIconCoords() {
@@ -347,6 +383,15 @@ export class Map {
             this.needToUpdateFarMap.forEach((sector) => {sector.updateFrame()})
             this.needToUpdateFarMap = []
         }
+
+
+        // Throttled updates
+        let now = this.game.time.now
+        if(now - this.last_throttledUpdate > 1000) {
+            this.last_throttledUpdate = now
+            this.updateText()
+            if (!this.gameEnded) this.checkEndGame()
+        }
     }
 
     // Update all tiles in near map
@@ -404,10 +449,35 @@ export class Map {
         return {x,y}
     }
 
+    updatePercDevastated () {
+        this.devastation = 0
+        this.farMapGroup.forEach((sector) => {
+            if (sector.checkDevastated()) this.devastation += 1
+        })
+        return Math.round(this.devastation/this.farMapGroup.length*100)
+    }
+
     destroy() {
         this.rootGroup.destroy()
         this.heightmap.destroy()
         this.microData.destroy()
+        this.textDev.destroy()
         delete this
+    }
+
+    checkEndGame() {
+        if (this.devastation > config.maxDevastation) {
+            this.gameEnded = true
+            this.game.defeat()
+        } else if (this.destroyers == 0) {
+            this.gameEnded = true
+            this.game.win()
+        }
+    }
+
+    nextMonth() {
+        this.gameEnded = false
+        this.month++
+        this.generateDestroyers()
     }
 }

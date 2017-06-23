@@ -6,6 +6,7 @@ export default class Cutter extends Unit {
         super(map, coords, 32)
         this.searchDirection = getRandomDirection()
         this.cutting = 0
+        this.map.destroyers += 1
         this.devastationRange = 2
     }
 
@@ -13,6 +14,11 @@ export default class Cutter extends Unit {
         if (!this.searchTrees()) {
             this.cutTrees()
         }
+    }
+
+    destroy() {
+        this.map.destroyers -= 1
+        this.sprite.destroy()
     }
 
     searchTrees() {
@@ -27,7 +33,7 @@ export default class Cutter extends Unit {
 
     cutTrees() {
         this.cutting += 1
-        if (this.cutting > 5) {
+        if (this.cutting > 10) {
             this.map.devastate(this.coords, this.devastationRange)
             this.cutting = 0
         }

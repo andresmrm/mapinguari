@@ -20,7 +20,7 @@ export default class Game extends Phaser.State {
             if(this.map && !this.game.paused) {
                 if(e.keyCode == config.keybinds.map) this.map.toggleFarMap()
                 if(e.keyCode == Phaser.Keyboard.H) this.map.toggleHeighmap()
-                if(e.keyCode == Phaser.Keyboard.G) this.toggleDebugInfo()
+                if(e.keyCode == Phaser.Keyboard.DELETE) this.toggleDebugInfo()
                 if(e.keyCode == Phaser.Keyboard.ESC) this.toggleMenu()
             }
         }
@@ -63,8 +63,6 @@ export default class Game extends Phaser.State {
     }
 
     render () {
-        // var style = {font: "16px fixed", fill: "#eeeeee"};
-        // this.game.add.text(0,0,"My Custom Fção Works", style);
         if (this.showDebugInfo) {
             let h = 20
             this.game.debug.text(this.game.time.fps, 2, h, "#ffffff");
@@ -146,5 +144,17 @@ export default class Game extends Phaser.State {
 
     shutdown () {
         this.map.destroy()
+    }
+
+    defeat() {
+        this.game.gui.add(['defeat'])
+    }
+
+    win() {
+        this.game.gui.add(['win'])
+    }
+
+    nextMonth() {
+        this.map.nextMonth()
     }
 }

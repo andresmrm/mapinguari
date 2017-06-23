@@ -17,7 +17,9 @@ class Gui {
     // Add menus to the menusPile. Open the first menu on the list.
     add (names) {
         for (let name of names.reverse()) {
-            this.menusPile.unshift(this.menus[name])
+            let menu = this.menus[name]
+            if (!menu) throw 'menu not found!'
+            this.menusPile.unshift(menu)
         }
         if (this.menusPile.length) {
             this.clear()
@@ -68,6 +70,10 @@ class Gui {
 
     restartGame() {
         this.game.restart()
+    }
+
+    nextLevel() {
+        this.game.nextLevel()
     }
 }
 

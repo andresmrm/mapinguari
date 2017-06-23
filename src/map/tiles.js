@@ -15,10 +15,10 @@ function over(tile) {
 function out(tile) {
     tile.alpha = tile.previousAlpha
 }
-function clicked(tile) {
-    console.log(tile.x, tile.y)
-    tile.map.zoomInTile(tile)
-}
+// function clicked(tile) {
+//     console.log(tile.x, tile.y)
+//     tile.map.zoomInTile(tile)
+// }
 
 
 export class Tile extends Phaser.Sprite {
@@ -48,15 +48,12 @@ export class FarTile extends Tile {
         super(map, pixelCoords, mapCoords, group)
 
         this.noise = 0
-
         forEachHexInDist(
             map.toNearCoords(mapCoords),
             this.map.nearRings-1,
             (coords) => {this.noise += getNoise(coords.x, coords.y)}
         )
-
         this.noise = this.noise/this.map.numTilesPerSector
-        this.devastation = 0
 
         this.updateFrame()
 
@@ -66,6 +63,10 @@ export class FarTile extends Tile {
 
     updateFrame() {
         this.frame = this.map.getFarFlorestLevel(this.coords, this.noise) + 15
+    }
+
+    checkDevastated() {
+        return this.frame == 15 ? true : false
     }
 }
 
