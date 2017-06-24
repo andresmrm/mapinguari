@@ -3,44 +3,64 @@
     "assets/audios/sprite.ogg"
   ],
   "spritemap": {
-    "ahh": {
+    "aaaah": {
       "start": 0,
-      "end": 0.9833333333333333,
+      "end": 0.9360544217687075,
+      "loop": false
+    },
+    "ahh": {
+      "start": 2,
+      "end": 2.9833333333333334,
+      "loop": false
+    },
+    "click": {
+      "start": 4,
+      "end": 4.897709750566893,
       "loop": false
     },
     "fallingtree": {
-      "start": 2,
-      "end": 3.4419274376417235,
+      "start": 6,
+      "end": 9.146530612244899,
+      "loop": false
+    },
+    "forest": {
+      "start": 11,
+      "end": 67.64521541950114,
       "loop": false
     },
     "moo": {
-      "start": 5,
-      "end": 6.137777777777778,
+      "start": 69,
+      "end": 70.13777777777777,
       "loop": false
     },
     "new": {
-      "start": 8,
-      "end": 8.18721088435374,
+      "start": 72,
+      "end": 73.57866213151928,
       "loop": false
     },
     "ohh": {
-      "start": 10,
-      "end": 11.157482993197279,
+      "start": 75,
+      "end": 76.15748299319728,
       "loop": false
     },
     "out": {
-      "start": 13,
-      "end": 13.275124716553288,
+      "start": 78,
+      "end": 78.2751247165533,
       "loop": false
     },
     "rrr": {
-      "start": 15,
-      "end": 15.907868480725623,
+      "start": 80,
+      "end": 82.70609977324263,
       "loop": false
     },
     "saw": {
-      "start": 17,
-      "end": 17.936780045351473,
+      "start": 84,
+      "end": 88.21374149659864,
+      "loop": false
+    },
+    "wind": {
+      "start": 90,
+      "end": 115.4698866213152,
       "loop": false
     }
   }

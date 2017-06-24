@@ -63,6 +63,10 @@ class Gui {
     }
 
 
+    playClick() {
+        this.game.playClick()
+    }
+
     startGame() {
         this.game.readyToStart = true
         this.game.paused = false

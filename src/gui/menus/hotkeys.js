@@ -5,12 +5,12 @@ import Menu from '../menu'
 
 
 let directions = {
-    ne: 'top left',
-    e: 'left',
-    se: 'bottom left',
-    sw: 'bottom right',
-    w: 'right',
-    nw: 'top right',
+    ne: 'top right',
+    e: 'right',
+    se: 'bottom right',
+    sw: 'bottom left',
+    w: 'left',
+    nw: 'top left',
 }
 
 export default class ChangeHotkeys extends Menu {

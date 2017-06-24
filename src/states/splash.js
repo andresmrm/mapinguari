@@ -17,6 +17,7 @@ export default class Splash extends Phaser.State {
     }
 
     create () {
+        this.game.initAudio()
         this.state.start('WaitStart')
     }
 }

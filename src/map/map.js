@@ -167,8 +167,11 @@ export class Map {
 
     generateDestroyers() {
         for (let i=0; i<this.month;i++) {
-            new Businessman(this, this.getRandomCoords(this.nearRings))
-            // new Cutter(this, this.getRandomCoords(this.nearRings))
+            let coords = this.getRandomCoords(this.nearRings)
+            new Businessman(this, coords)
+            new Cutter(this, coords)
+            new Cutter(this, coords)
+            new Cutter(this, coords)
         }
     }
 
@@ -268,7 +271,12 @@ export class Map {
             this.updateIconCoords()
             this.createNearTiles(this.zoomedCoordsNear)
             this.displayOnlyNearUnits()
+            this.updateAmbientSound()
         }
+    }
+
+    updateAmbientSound() {
+        this.game.adjustAmbientSound(this.getFarFlorestLevel(this.zoomedSector)/3)
     }
 
     openFarMap() {
@@ -423,14 +431,14 @@ export class Map {
             level = Math.round(noise*3+1) - this.microData.get(coords).devastation
         return level<0 ? 0 : level
     }
-    getFarFlorestLevel(coords, noise) {
+    getFarFlorestLevel(sector) {
         let devastation = 0
         forEachHexInDist(
-            this.toNearCoords(coords),
+            this.toNearCoords(sector.coords),
             this.nearRings-1,
             (coords) => {devastation += this.microData.get(coords).devastation}
         )
-        let level = Math.round(noise*3+1) - devastation/this.numTilesPerSector
+        let level = Math.round(sector.noise*3+1) - devastation/this.numTilesPerSector
         return level<0 ? 0 : level
     }
 
@@ -441,8 +449,9 @@ export class Map {
         while (!found) {
             var sectorCoords = this.farMapGroup.getRandom().coords,
                 {x,y} = this.toNearCoords(sectorCoords)
-            x += randInt(this.nearRings)
-            y += randInt(this.nearRings)
+            console.log(sectorCoords)
+            x += randInt(this.nearRings-1)
+            y += randInt(this.nearRings-1)
             if(axialDistance(this.player.coords, {x, y}) >= dist) {
                 found = true
             }

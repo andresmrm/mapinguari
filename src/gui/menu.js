@@ -32,8 +32,12 @@ export default class Menu {
         node.innerHTML = text.replace(
             hotkey, `<span class="hotkey-mark">${hotkey}</span>`)
 
-        node.onclick = fn
-        this.hotkeys[hotkey] = fn
+        let buttomFn = () => {
+            this.manager.playClick()
+            fn()
+        }
+        node.onclick = buttomFn
+        this.hotkeys[hotkey] = buttomFn
 
         this.root.appendChild(node)
     }

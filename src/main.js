@@ -39,6 +39,21 @@ class Game extends Phaser.Game {
     nextLevel () {
         this.state.states.Game.nextMonth()
     }
+
+    initAudio () {
+        if (!this.audio) {
+            this.audio = this.add.audioSprite('audios')
+            this.audio.play = function (marker, volume, loop=false) {
+                if (volume === undefined) { volume = 1; }
+                this.sounds[marker].allowMultiple = true
+                return this.sounds[marker].play(marker, null, volume, loop, false)
+            }
+        }
+    }
+
+    playClick() {
+        if(this.audio) this.audio.play('click')
+    }
 }
 
 window.game = new Game()

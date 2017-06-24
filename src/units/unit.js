@@ -1,6 +1,7 @@
 import {randTrue} from '../noiser'
 import {getRandomDirection, axialDistance} from '../map/utils'
 
+
 export default class Unit {
     constructor(map, coords, tile) {
         this.map = map
@@ -13,7 +14,7 @@ export default class Unit {
         this.sprite.unit = this
         this.updateSpriteCoords()
         this.last_action = 0
-        this.initialFear = 6
+        this.initialFear = 4
         this.fear = this.initialFear
         this.actionThrottleTime = 150
         this.isFleeing = false
@@ -40,7 +41,7 @@ export default class Unit {
 
     // Play sound, reduce volume with distance
     playSound(name) {
-        let volume = 1 / (axialDistance(this.coords, this.map.player.coords)+1)**(.3)
+        let volume = 1 / (axialDistance(this.coords, this.map.player.coords)*0.8)**(0.7)
         if (volume > 0.1) this.map.game.playSound(name, volume)
     }
 
@@ -48,6 +49,7 @@ export default class Unit {
     moveTo(coords) {
         let dx = coords.x - this.coords.x,
             dy = coords.y - this.coords.y
+        // TODO: can try to move outside of map!!!!
         if (dx!=0 || dy!=0) return this.move({x: Math.sign(dx), y: Math.sign(dy)})
         return false
     }
@@ -103,11 +105,14 @@ export default class Unit {
     // Return true if is fleeing, false otherwise
     flee() {
         var playerCoords = this.map.player.coords
-        if (axialDistance(playerCoords, this.coords) < this.fear/2) {
+        if (axialDistance(playerCoords, this.coords) < this.fear) {
             if (!this.isFleeing) this.playSound(this.fleeSound)
             this.isFleeing = true
             this.sprite.frame = this.fleeingFrame
-            if (randTrue(0.5)) this.fear += 1
+            if (randTrue(0.5)) {
+                this.fear += 1
+                this.freakOutCheck()
+            }
             let dx = this.coords.x - playerCoords.x,
                 dy = this.coords.y - playerCoords.y
             this.move({x: Math.sign(dx), y: Math.sign(dy)})
@@ -118,5 +123,8 @@ export default class Unit {
             if (randTrue(0.5) && this.fear > this.initialFear) this.fear--
             return false
         }
+    }
+
+    freakOutCheck() {
     }
 }

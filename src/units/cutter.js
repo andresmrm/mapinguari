@@ -1,26 +1,22 @@
 import Unit from './unit'
 import {getRandomDirection, findNearest} from '../map/utils'
 import {randTrue} from '../noiser'
+import Destroyer from './destroyer'
 
-export default class Cutter extends Unit {
+export default class Cutter extends Destroyer {
     constructor (map, coords) {
         super(map, coords, 32)
         this.searchDirection = getRandomDirection()
         this.cutting = 0
-        this.map.destroyers += 1
         this.devastationRange = 2
         this.fleeSound = 'ohh'
+        this.fleeOutSound = 'aaaah'
     }
 
     notFleeing() {
         if (!this.searchTrees()) {
             this.cutTrees()
         }
-    }
-
-    destroy() {
-        this.map.destroyers -= 1
-        super.destroy()
     }
 
     searchTrees() {
@@ -39,12 +35,14 @@ export default class Cutter extends Unit {
     }
 
     cutTrees() {
-        this.cutting += 1
-        if(randTrue(0.1))this.playSound('saw', this.coords)
-        if (this.cutting > 10) {
-            this.playSound('fallingtree', this.coords)
-            this.map.devastate(this.coords, this.devastationRange)
-            this.cutting = 0
+        if (this.map.getNearFlorestLevel(this.coords)) {
+            this.cutting += 1
+            if(randTrue(0.1))this.playSound('saw', this.coords)
+            if (this.cutting > 10) {
+                this.playSound('fallingtree', this.coords)
+                this.map.devastate(this.coords, this.devastationRange)
+                this.cutting = 0
+            }
         }
     }
 }

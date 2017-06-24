@@ -62,7 +62,8 @@ export class FarTile extends Tile {
     }
 
     updateFrame() {
-        this.frame = this.map.getFarFlorestLevel(this.coords, this.noise) + 15
+        // TODO: florest level can be a float!!! round?
+        this.frame = this.map.getFarFlorestLevel(this) + 15
     }
 
     checkDevastated() {

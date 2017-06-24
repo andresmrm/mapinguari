@@ -45,18 +45,28 @@ export default class Game extends Phaser.State {
 
         resize()
 
-        this.audio = this.game.add.audioSprite('audios')
-        this.audio.play = function (marker, volume) {
-            if (volume === undefined) { volume = 1; }
-            this.sounds[marker].allowMultiple = true
-            return this.sounds[marker].play(marker, null, volume, false, false)
-        }
-
         this.playSound('rrr')
+        this.game.audio.get('forest').onDecoded.add(
+            this.startAmbientSound, this)
+        this.startAmbientSound()
     }
 
-    playSound(name, volume) {
-        this.audio.play(name, volume)
+    startAmbientSound() {
+        this.forestSound = this.playSound('forest', 0, true)
+        this.forestSound.fadeTo(2000, 1)
+        this.windSound = this.playSound('wind', 0.001, true)
+    }
+
+    playSound(name, volume, loop) {
+        return this.game.audio.play(name, volume, loop)
+    }
+    // fadeToSound(name, time, loop) {
+    //     this.game.audio.get(name).fadeTo(time, loop, name)
+    // }
+    adjustAmbientSound(forestLevel) {
+        if (this.forestSound) this.forestSound.fadeTo(2000, forestLevel+0.001)
+        if (this.windSound) this.windSound.fadeTo(2000, 1-forestLevel+0.001)
+
     }
 
     startMap () {
@@ -77,7 +87,7 @@ export default class Game extends Phaser.State {
 
     render () {
         if (this.showDebugInfo) {
-            let h = 20
+            let h = 200
             this.game.debug.text(this.game.time.fps, 2, h, "#ffffff");
             h += 20
             let text = ''

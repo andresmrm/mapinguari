@@ -11,7 +11,8 @@ export default class Instructions extends Menu {
 
     open () {
         this.addTitle('instructions')
-        this.addText('-instructions')
+        this.addText('-instructions1')
+        this.addText('-instructions2')
         this.addText('-movekeys')
         let keys = config.keybinds,
             text = ''

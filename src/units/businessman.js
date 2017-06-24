@@ -2,23 +2,19 @@ import {getRandomDirection, axialAdd} from '../map/utils'
 import {randTrue} from '../noiser'
 import Unit from './unit'
 import Cutter from './cutter'
-import Cattle from '../units/cattle'
+import Cattle from './cattle'
+import Destroyer from './destroyer'
 
-export default class Businessman extends Unit {
+export default class Businessman extends Destroyer {
     constructor (map, coords) {
         super(map, coords, 33)
         this.fleeingFrame = 35
         this.fleeSound = 'ahh'
-        this.map.destroyers += 1
-    }
-
-    destroy() {
-        this.map.destroyers -= 1
-        super.destroy()
+        this.fleeOutSound = 'aaaah'
     }
 
     notFleeing() {
-        if (randTrue(0.95)) {
+        if (randTrue(1-1/200)) {
             this.wanderer()
         } else {
             this.playSound('new')
