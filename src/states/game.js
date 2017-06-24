@@ -170,7 +170,11 @@ export default class Game extends Phaser.State {
     }
 
     defeat() {
-        this.game.gui.add(['defeat'])
+        this.forestSound.fadeTo(2000, 0)
+        this.windSound.fadeTo(2000, 1)
+        if (this.map.month > 3) this.game.gui.add(['defeatimpossible'])
+        else this.game.gui.add(['defeat'])
+
     }
 
     win() {

@@ -129,6 +129,11 @@ export function axialAdd(a, b) {
     return {x:a.x+b.x, y:a.y+b.y}
 }
 
+export function axialEqual(a, b) {
+    if(a.x==b.x && a.y==b.y) return true
+    else return false
+}
+
 
 export function findNearest(center, maxRadius, testFn) {
     // test center

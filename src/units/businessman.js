@@ -14,7 +14,7 @@ export default class Businessman extends Destroyer {
     }
 
     notFleeing() {
-        if (randTrue(1-1/200)) {
+        if (randTrue(1-1/100)) {
             this.wanderer()
         } else {
             this.playSound('new')
