@@ -20,7 +20,7 @@ export default class Cutter extends Unit {
 
     destroy() {
         this.map.destroyers -= 1
-        this.sprite.destroy()
+        super.destroy()
     }
 
     searchTrees() {
@@ -31,6 +31,11 @@ export default class Cutter extends Unit {
         } else {
             return this.move(this.searchDirection)
         }
+    }
+
+    triedToLeaveWorld() {
+        this.searchDirection = getRandomDirection()
+        super.triedToLeaveWorld()
     }
 
     cutTrees() {

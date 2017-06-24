@@ -38,8 +38,9 @@ export default class Unit {
         return true
     }
 
+    // Play sound, reduce volume with distance
     playSound(name) {
-        let volume = 1 / axialDistance(this.coords, this.map.player.coords)**(.3)
+        let volume = 1 / (axialDistance(this.coords, this.map.player.coords)+1)**(.3)
         if (volume > 0.1) this.map.game.playSound(name, volume)
     }
 
@@ -53,8 +54,10 @@ export default class Unit {
 
     // Called when the unit tried to leave the world
     triedToLeaveWorld() {
-        this.playSound('out')
-        this.destroy()
+        if (this.isFleeing) {
+            this.playSound('out')
+            this.destroy()
+        }
     }
 
     destroy() {
@@ -112,7 +115,7 @@ export default class Unit {
         } else {
             this.isFleeing = false
             this.sprite.frame = this.tile
-            if (randTrue(0.99) && this.fear > this.initialFear) this.fear--
+            if (randTrue(0.5) && this.fear > this.initialFear) this.fear--
             return false
         }
     }

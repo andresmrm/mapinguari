@@ -14,7 +14,7 @@ export default class Businessman extends Unit {
 
     destroy() {
         this.map.destroyers -= 1
-        this.sprite.destroy()
+        super.destroy()
     }
 
     notFleeing() {
