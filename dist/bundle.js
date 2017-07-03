@@ -457,6 +457,7 @@ var defaultConfig = {
     localStorageName: 'mapinguari',
     language: null,
     defaultLang: 'en',
+    centerPlayer: true,
     keybinds: {
         move: {
             ne: _phaserCe2.default.Keyboard.E,
@@ -112475,6 +112476,7 @@ var Game = function (_Phaser$State) {
                     if (e.keyCode == _config2.default.keybinds.map) _this2.map.toggleFarMap();
                     if (e.keyCode == _phaserCe2.default.Keyboard.H) _this2.map.toggleHeighmap();
                     if (e.keyCode == _phaserCe2.default.Keyboard.DELETE) _this2.toggleDebugInfo();
+                    if (e.keyCode == _phaserCe2.default.Keyboard.HOME) _this2.toggleCenterPlayer();
                     if (e.keyCode == _phaserCe2.default.Keyboard.ESC) _this2.toggleMenu();
                 }
             };
@@ -112535,6 +112537,12 @@ var Game = function (_Phaser$State) {
         key: 'toggleDebugInfo',
         value: function toggleDebugInfo() {
             this.showDebugInfo = !this.showDebugInfo;
+        }
+    }, {
+        key: 'toggleCenterPlayer',
+        value: function toggleCenterPlayer() {
+            _config2.default.centerPlayer = !_config2.default.centerPlayer;
+            _config2.default.save();
         }
     }, {
         key: 'toggleMenu',
@@ -112908,7 +112916,7 @@ var Player = function (_Unit) {
             // if(this.throttleMove(direction, this.moveThrottleTime)) {
             if (this.move(direction)) {
                 this.map.changeSector(this.coords);
-                // if (config.centerPlayer) this.map.centerViewport(this.coords)
+                if (_config2.default.centerPlayer) this.map.centerViewport(this.coords);
             }
         }
     }, {
