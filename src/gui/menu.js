@@ -1,4 +1,4 @@
-import {keyCodeToStr} from '../utils'
+import {getKeyStr} from '../utils'
 import t from '../i18n/i18n'
 
 export default class Menu {
@@ -46,19 +46,8 @@ export default class Menu {
         this.handleKeypress(event)
     }
 
-    getKeyCode (event) {
-        if(window.event) { // IE
-            return event.keyCode;
-        } else if(event.which){ // Netscape/Firefox/Opera
-            return event.which
-        } else {
-            throw 'no method to decode key code'
-        }
-    }
-
     handleKeypress (event) {
-        var keynum = this.getKeyCode(event),
-            key = keyCodeToStr(keynum),
+        var key = getKeyStr(event),
             fn = this.hotkeys[key]
         if (fn) fn()
     }

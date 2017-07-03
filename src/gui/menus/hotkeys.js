@@ -1,4 +1,4 @@
-import {keyCodeToStr} from '../../utils'
+import {getKeyStr} from '../../utils'
 import config from '../../config'
 import t from '../../i18n/i18n'
 import Menu from '../menu'
@@ -56,7 +56,7 @@ export default class ChangeHotkeys extends Menu {
             // back to key code. This avoids problems with Phaser, that
             // uses uppercase codes.
             this.changingKey(
-                keyCodeToStr(this.getKeyCode(event)).toUpperCase().charCodeAt(0)
+                getKeyStr(event).toUpperCase().charCodeAt(0)
             )
             this.changingKey = null
             config.save()

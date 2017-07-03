@@ -673,23 +673,9 @@ var Menu = function () {
             this.handleKeypress(event);
         }
     }, {
-        key: 'getKeyCode',
-        value: function getKeyCode(event) {
-            if (window.event) {
-                // IE
-                return event.keyCode;
-            } else if (event.which) {
-                // Netscape/Firefox/Opera
-                return event.which;
-            } else {
-                throw 'no method to decode key code';
-            }
-        }
-    }, {
         key: 'handleKeypress',
         value: function handleKeypress(event) {
-            var keynum = this.getKeyCode(event),
-                key = (0, _utils.keyCodeToStr)(keynum),
+            var key = (0, _utils.getKeyStr)(event),
                 fn = this.hotkeys[key];
             if (fn) fn();
         }
@@ -108043,17 +108029,31 @@ module.exports = {
 
 
 Object.defineProperty(exports, "__esModule", {
-  value: true
+    value: true
 });
-exports.keyCodeToStr = keyCodeToStr;
+exports.getKeyStr = getKeyStr;
 var centerGameObjects = exports.centerGameObjects = function centerGameObjects(objects) {
-  objects.forEach(function (object) {
-    object.anchor.setTo(0.5);
-  });
+    objects.forEach(function (object) {
+        object.anchor.setTo(0.5);
+    });
 };
 
-function keyCodeToStr(keyCode) {
-  return String.fromCharCode(keyCode);
+function getKeyStr(event) {
+    var str = '';
+    if (event.key) {
+        str = event.key;
+    } else {
+        if (window.event) {
+            // IE
+            str = String.fromCharCode(event.keyCode);
+        } else if (event.which) {
+            // Netscape/Firefox/Opera
+            str = String.fromCharCode(event.which);
+        } else {
+            throw 'no method to decode key code';
+        }
+    }
+    return str;
 }
 
 /***/ }),
@@ -110964,7 +110964,7 @@ var ChangeHotkeys = function (_Menu) {
             var keys = _config2.default.keybinds;
             Object.keys(keys.move).forEach(function (dir, i) {
                 var text = i + 1 + ' ' + (0, _i18n2.default)(directions[dir]) + ': ';
-                text += (0, _utils.keyCodeToStr)(keys.move[dir]).toUpperCase();
+                text += keyCodeToStr(keys.move[dir]).toUpperCase();
                 _this2.addButton(text, function () {
                     _this2.changingKey = function (char) {
                         keys.move[dir] = char;
@@ -110973,7 +110973,7 @@ var ChangeHotkeys = function (_Menu) {
             });
 
             var text = (0, _i18n2.default)('open map') + ': ';
-            text += (0, _utils.keyCodeToStr)(keys.map).toUpperCase();
+            text += keyCodeToStr(keys.map).toUpperCase();
             this.addButton(text, function () {
                 _this2.changingKey = function (char) {
                     keys.map = char;
@@ -110993,7 +110993,7 @@ var ChangeHotkeys = function (_Menu) {
                 // Converts key code to string to uppercase and convert
                 // back to key code. This avoids problems with Phaser, that
                 // uses uppercase codes.
-                this.changingKey((0, _utils.keyCodeToStr)(this.getKeyCode(event)).toUpperCase().charCodeAt(0));
+                this.changingKey((0, _utils.getKeyStr)(event).toUpperCase().charCodeAt(0));
                 this.changingKey = null;
                 _config2.default.save();
                 this.reload();
@@ -112641,7 +112641,8 @@ var Game = function (_Phaser$State) {
                 _this2.game.scale.setGameSize(window.innerWidth, window.innerHeight);
                 var scaleH = window.innerHeight / _this2.map.mapTopOffset / 2,
                     scaleW = window.innerWidth / _this2.map.mapLeftOffset / 2,
-                    scale = Math.min(scaleH, scaleW);
+                    scale = Math.round(Math.min(scaleH, scaleW));
+                if (scale == 0) scale = 1;
                 _this2.game.world.scale.setTo(scale, scale);
                 _this2.map.centerMapOnScreen(window.innerHeight / scale, window.innerWidth / scale);
             };
