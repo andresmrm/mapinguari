@@ -198,7 +198,7 @@ export class Map {
     updateText() {
         this.updatePercDevastated()
         this.textDev.setText(`${t("devastation")} : ${this.devastation}%`)
-        let nonred = 255-(this.devastation/config.maxDevastation)*255
+        let nonred = Math.round(255-(this.devastation/config.maxDevastation)*255)
         if (nonred<0) nonred = 0
         let color = `rgb(255,${nonred},${nonred})`
         this.textDev.setStyle({font: "16px fixed", fill: color})
@@ -525,7 +525,6 @@ export class Map {
         while (!found) {
             var sectorCoords = this.farMapGroup.getRandom().coords,
                 {x,y} = this.toNearCoords(sectorCoords)
-            console.log(sectorCoords)
             x += randInt(this.nearRings-1)
             y += randInt(this.nearRings-1)
             if(axialDistance(this.player.coords, {x, y}) >= dist) {
