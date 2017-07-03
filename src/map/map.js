@@ -33,7 +33,7 @@ export class Map {
         this.tileFlatWidthVariationPerColumn = 26
 
         // TODO: Allow different number of far and near rings
-        this.rings = 8
+        this.rings = 6
         this.farRings = this.rings
         this.nearRings = this.rings
 
@@ -138,7 +138,7 @@ export class Map {
         // this.nearRootGroup.y = -screen.y
         let tween = this.game.add.tween(this.nearRootGroup).to(
             { x: -screen.x, y: -screen.y },
-            this.player.actionThrottleTime-10, Phaser.Easing.Linear.None, true)
+            this.moveAnimationTime(), Phaser.Easing.Linear.None, true)
         tween.onComplete.add(doCenter, this)
 
         function doCenter () {
@@ -148,6 +148,10 @@ export class Map {
             }
         }
 
+    }
+
+    moveAnimationTime() {
+        return this.player.actionThrottleTime
     }
 
     centerMapOnScreen(height, width) {
@@ -256,6 +260,7 @@ export class Map {
         // TODO: is this round good enought?
         x = Math.round(x)
         y = Math.round(y)
+        // return cubeToAxial(cubeRound(axialToCube({x, y})))
         return {x, y}
     }
 
@@ -296,7 +301,7 @@ export class Map {
                 if (this.checkInsideMap(coords)) {
                     if (!oldTiles[coords.str()]) {
                         let tile = new NearTile(this, coords, this.nearMapGroup/*, sector*/)
-                        tile.appear(this.player.actionThrottleTime-10)
+                        tile.appear(this.moveAnimationTime())
                     }
                     delete oldTiles[coords.str()]
                 }
@@ -305,7 +310,7 @@ export class Map {
 
         Object.keys(oldTiles).forEach(
             (key) => {
-                oldTiles[key].disappear(this.player.actionThrottleTime-10)
+                oldTiles[key].disappear(this.moveAnimationTime())
             }
         )
 
