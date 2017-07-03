@@ -111325,8 +111325,8 @@ exports.default = {
         pt: 'O <a href="https://pt.wikipedia.org/wiki/Mapinguari" target="_blank">Mapinguari</a> é uma das criaturas míticas da Amazônia. Geralmente ele não se preocupa muito em proteger a floresta. Mas na velocidade em que ela tem sido destruída atualmente, ele não teve muita escolha.'
     },
     '-about': {
-        en: 'Free software game made by Andrés Martano (andres@inventati.org). <a href="https://gitlab.com/andresmrm/mapinguari">Check source and full credits!</a>',
-        pt: 'Um jogo software livre feito por Andrés Martano (andres@inventati.org). <a href="https://gitlab.com/andresmrm/mapinguari">Veja o código fonte e créditos!</a>'
+        en: 'Free software game made by Andrés Martano (andres@inventati.org). <a href="https://gitlab.com/andresmrm/mapinguari" target="_blank">Check source and full credits!</a>',
+        pt: 'Um jogo software livre feito por Andrés Martano (andres@inventati.org). <a href="https://gitlab.com/andresmrm/mapinguari" target="_blank">Veja o código fonte e créditos!</a>'
     },
     '-movekeys': {
         en: 'To move you click and hold the primary mouse button (press SPACEBAR to enable auto follow mouse), touch the screen, or use these keys:',
@@ -111782,7 +111782,7 @@ var Map = exports.Map = function () {
         value: function updateText() {
             this.updatePercDevastated();
             this.textDev.setText((0, _i18n2.default)("devastation") + ' : ' + this.devastation + '%');
-            var nonred = 255 - this.devastation / _config2.default.maxDevastation * 255;
+            var nonred = Math.round(255 - this.devastation / _config2.default.maxDevastation * 255);
             if (nonred < 0) nonred = 0;
             var color = 'rgb(255,' + nonred + ',' + nonred + ')';
             this.textDev.setStyle({ font: "16px fixed", fill: color });
@@ -112162,7 +112162,6 @@ var Map = exports.Map = function () {
                     x = _toNearCoords.x,
                     y = _toNearCoords.y;
 
-                console.log(sectorCoords);
                 x += (0, _noiser.randInt)(this.nearRings - 1);
                 y += (0, _noiser.randInt)(this.nearRings - 1);
                 if ((0, _utils.axialDistance)(this.player.coords, { x: x, y: y }) >= dist) {
