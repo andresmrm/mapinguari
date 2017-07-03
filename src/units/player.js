@@ -13,7 +13,7 @@ export default class Player extends Unit {
         // if(this.throttleMove(direction, this.moveThrottleTime)) {
         if(this.move(direction)) {
             this.map.changeSector(this.coords)
-            // if (config.centerPlayer) this.map.centerViewport(this.coords)
+            if (config.centerPlayer) this.map.centerViewport(this.coords)
         }
     }
 

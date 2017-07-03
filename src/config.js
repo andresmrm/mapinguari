@@ -4,6 +4,7 @@ let defaultConfig = {
     localStorageName: 'mapinguari',
     language: null,
     defaultLang: 'en',
+    centerPlayer: true,
     keybinds: {
         move: {
             ne: Phaser.Keyboard.E,
