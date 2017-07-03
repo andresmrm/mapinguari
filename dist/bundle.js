@@ -107421,7 +107421,7 @@ var Unit = function () {
             return _this.update();
         };
         this.sprite.unit = this;
-        this.updateSpriteCoords();
+        this.updateSpriteCoords(false);
         this.last_action = 0;
         this.initialFear = 4;
         this.fear = this.initialFear;
@@ -107433,11 +107433,16 @@ var Unit = function () {
     _createClass(Unit, [{
         key: 'updateSpriteCoords',
         value: function updateSpriteCoords() {
+            var doTween = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : true;
+
             var screenCoords = this.map.axialToPixelPointy(this.coords);
 
-            this.game.add.tween(this.sprite).to({ x: screenCoords.x, y: screenCoords.y }, this.actionThrottleTime, _phaserCe2.default.Easing.Linear.None, true);
-            // this.sprite.x = screenCoords.x
-            // this.sprite.y = screenCoords.y
+            if (doTween) {
+                this.game.add.tween(this.sprite).to({ x: screenCoords.x, y: screenCoords.y }, this.actionThrottleTime, _phaserCe2.default.Easing.Linear.None, true);
+            } else {
+                this.sprite.x = screenCoords.x;
+                this.sprite.y = screenCoords.y;
+            }
         }
     }, {
         key: 'move',
@@ -112421,7 +112426,10 @@ var FarTile = exports.FarTile = function (_Tile) {
         key: 'updateFrame',
         value: function updateFrame() {
             // TODO: florest level can be a float!!! round?
-            this.frame = this.map.getFarFlorestLevel(this) + 15;
+            var frame = Math.round(this.map.getFarFlorestLevel(this));
+            frame = frame < 4 ? frame : 3;
+            this.frame = frame + 15;
+            // this.frame = this.map.getFarFlorestLevel(this) + 15
         }
     }, {
         key: 'checkDevastated',
@@ -112459,7 +112467,8 @@ var NearTile = exports.NearTile = function (_Tile2) {
     _createClass(NearTile, [{
         key: 'updateFrame',
         value: function updateFrame() {
-            this.frame = this.map.getNearFlorestLevel(this.coords);
+            var frame = this.map.getNearFlorestLevel(this.coords);
+            this.frame = frame < 4 ? frame : 3;
             // this.frame = 0
             // if (this.noise > .1) this.frame = 2
             // if (this.noise > .6) this.frame = 1

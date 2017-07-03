@@ -13,7 +13,7 @@ export default class Unit {
         this.sprite = this.map.addUnit(this)
         this.sprite.update = () => this.update()
         this.sprite.unit = this
-        this.updateSpriteCoords()
+        this.updateSpriteCoords(false)
         this.last_action = 0
         this.initialFear = 4
         this.fear = this.initialFear
@@ -22,14 +22,17 @@ export default class Unit {
         this.checkUnitInViewport()
     }
 
-    updateSpriteCoords() {
+    updateSpriteCoords(doTween=true) {
         let screenCoords = this.map.axialToPixelPointy(this.coords)
 
-        this.game.add.tween(this.sprite).to(
-            { x: screenCoords.x, y: screenCoords.y },
-            this.actionThrottleTime, Phaser.Easing.Linear.None, true)
-        // this.sprite.x = screenCoords.x
-        // this.sprite.y = screenCoords.y
+        if (doTween) {
+            this.game.add.tween(this.sprite).to(
+                { x: screenCoords.x, y: screenCoords.y },
+                this.actionThrottleTime, Phaser.Easing.Linear.None, true)
+        } else {
+            this.sprite.x = screenCoords.x
+            this.sprite.y = screenCoords.y
+        }
     }
 
     move(direction) {
