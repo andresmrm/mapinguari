@@ -42,8 +42,8 @@ export default {
         pt: 'A floresta está condenada!',
     },
     '-defeatimpossible': {
-        en: 'Yeah... The Mapinguari can\'t do it alone...',
-        pt: 'Sozinho o Mapinguari não vai conseguir...',
+        en: 'The forest is doomed! Yeah... The Mapinguari can\'t do it alone...',
+        pt: 'A floresta está condenada! É... Sozinho o Mapinguari não vai conseguir...',
     },
     'we lost!': {
         en: '',
