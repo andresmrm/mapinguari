@@ -74,7 +74,10 @@ export class FarTile extends Tile {
 
     updateFrame() {
         // TODO: florest level can be a float!!! round?
-        this.frame = this.map.getFarFlorestLevel(this) + 15
+        let frame = Math.round(this.map.getFarFlorestLevel(this))
+        frame = frame<4?frame:3
+        this.frame = frame + 15
+        // this.frame = this.map.getFarFlorestLevel(this) + 15
     }
 
     checkDevastated() {
@@ -102,7 +105,8 @@ export class NearTile extends Tile {
     }
 
     updateFrame() {
-        this.frame = this.map.getNearFlorestLevel(this.coords)
+        let frame = this.map.getNearFlorestLevel(this.coords)
+        this.frame = frame<4?frame:3
         // this.frame = 0
         // if (this.noise > .1) this.frame = 2
         // if (this.noise > .6) this.frame = 1
