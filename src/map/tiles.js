@@ -73,13 +73,13 @@ export class FarTile extends Tile {
 
 
 export class NearTile extends Tile {
-    constructor (map, mapCoords, group, sector) {
+    constructor (map, mapCoords, group/*, sector*/) {
         let pixelCoords = map.axialToPixelPointy(mapCoords),
             noiseCoords = mapCoords
 
         super(map, pixelCoords, mapCoords, group)
 
-        this.sector = sector
+        // this.sector = sector
         // this.noise = getNoise(noiseCoords.x, noiseCoords.y)
 
         this.updateFrame()

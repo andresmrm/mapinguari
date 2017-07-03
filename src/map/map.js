@@ -98,6 +98,10 @@ export class Map {
             t = this.transitionRings
         this.safeDist = r-1 + Math.floor(r/2)*(r+Math.floor(t/2)-t) + Math.floor((r-1)/2)*(2*r-1-t)
 
+        // Current axial coords of the center of view port.
+        // Usefull when it's not the center of a sector
+        this.viewportCenter = null
+
         // TODO: Debug
         window.map = this
     }
@@ -126,9 +130,14 @@ export class Map {
 
     // Center viewport to an axial coord
     centerViewport(center) {
+        this.viewportCenter = center
+        console.log(this.viewportCenter)
         let screen = this.axialToPixelPointy(center)
         this.nearRootGroup.x = -screen.x
         this.nearRootGroup.y = -screen.y
+        if (config.centerView) {
+            this.recreateView(center)
+        }
     }
 
     centerMapOnScreen(height, width) {
@@ -148,6 +157,7 @@ export class Map {
         let initial = {x:0, y:0}
         this.player = new Player(this, initial)
         this.zoomInCoords(initial)
+        this.centerViewport(initial)
 
         this.playerIcon = this.addSprite(
             this.farUnitsGroup, initial, this.player.tile)
@@ -266,12 +276,28 @@ export class Map {
     }
 
     createNearTiles(center) {
-        let sector = this.getSector(this.toFarCoords(center))
+        // let sector = this.getSector(this.toFarCoords(center))
         forEachHexInDist(
             center,
             this.rings-1,
-            (coords) => new NearTile(this, coords, this.nearMapGroup, sector)
+            (coords) => {
+                // TODO: this check is only needed if config.centerView
+                if (this.checkInsideMap(coords))
+                    new NearTile(this, coords, this.nearMapGroup/*, sector*/)
+            }
         )
+    }
+
+    recreateView(coords) {
+        if (this.nearMapGroup) {
+            this.nearMapGroup.destroy()
+        }
+        this.nearMapGroup = createGroup(this, this.nearRootGroup)
+        this.nearMapGroup.z = 1
+        this.nearRootGroup.sort('z', Phaser.Group.SORT_ASCENDING)
+        this.createNearTiles(coords)
+        this.displayOnlyNearUnits()
+        this.updateAmbientSound()
     }
 
     zoomInCoords(coords) {
@@ -280,19 +306,19 @@ export class Map {
 
     zoomInSector(sector) {
         if (this.zoomedSector != sector) {
-            if (this.nearMapGroup) {
-                this.nearMapGroup.destroy()
-            }
-            this.nearMapGroup = createGroup(this, this.nearRootGroup)
-            this.nearMapGroup.z = 1
+
             this.zoomedSector = sector
             this.zoomedCoordsNear = this.toNearCoords(sector.coords)
-            this.nearRootGroup.sort('z', Phaser.Group.SORT_ASCENDING)
-            this.centerViewport(this.zoomedCoordsNear)
+
+            if (!config.centerPlayer) {
+                this.centerViewport(this.zoomedCoordsNear)
+            }
+
+            if (config.centerView) {
+                this.recreateView(this.zoomedCoordsNear)
+            }
+
             this.updateIconCoords()
-            this.createNearTiles(this.zoomedCoordsNear)
-            this.displayOnlyNearUnits()
-            this.updateAmbientSound()
         }
     }
 
@@ -370,7 +396,7 @@ export class Map {
     }
 
     checkCoordsInViewport(coords) {
-        return axialDistance(coords, this.zoomedCoordsNear) < this.rings
+        return axialDistance(coords, this.viewportCenter) < this.rings
     }
 
     // If needed, change current displayed sector to better acomodate
@@ -389,14 +415,20 @@ export class Map {
         return false
     }
 
+    // Check if near map coords are inside entire map limits
+    checkInsideMap(coords) {
+        // Cheap check first
+        if (axialDistance(coords) > this.safeDist) {
+            if (!this.getNearestSectorChecking(coords)) return false
+        }
+        return true
+    }
+
     moveUnit(coords, direction) {
         let newCoords = translate(coords, direction)
 
-        // Cheap check first
-        if (axialDistance(newCoords) > this.safeDist) {
-            if (!this.getNearestSectorChecking(newCoords)) throw 'outOfWorld'
-        }
-        return newCoords
+        if (this.checkInsideMap(newCoords)) return newCoords
+        else throw 'outOfWorld'
     }
 
     update(input) {

@@ -458,6 +458,7 @@ var defaultConfig = {
     language: null,
     defaultLang: 'en',
     centerPlayer: true,
+    centerView: true,
     keybinds: {
         move: {
             ne: _phaserCe2.default.Keyboard.E,
@@ -111619,6 +111620,10 @@ var Map = exports.Map = function () {
             t = this.transitionRings;
         this.safeDist = r - 1 + Math.floor(r / 2) * (r + Math.floor(t / 2) - t) + Math.floor((r - 1) / 2) * (2 * r - 1 - t);
 
+        // Current axial coords of the center of view port.
+        // Usefull when it's not the center of a sector
+        this.viewportCenter = null;
+
         // TODO: Debug
         window.map = this;
     }
@@ -111660,9 +111665,14 @@ var Map = exports.Map = function () {
     }, {
         key: 'centerViewport',
         value: function centerViewport(center) {
+            this.viewportCenter = center;
+            console.log(this.viewportCenter);
             var screen = this.axialToPixelPointy(center);
             this.nearRootGroup.x = -screen.x;
             this.nearRootGroup.y = -screen.y;
+            if (_config2.default.centerView) {
+                this.recreateView(center);
+            }
         }
     }, {
         key: 'centerMapOnScreen',
@@ -111685,6 +111695,7 @@ var Map = exports.Map = function () {
             var initial = { x: 0, y: 0 };
             this.player = new _player2.default(this, initial);
             this.zoomInCoords(initial);
+            this.centerViewport(initial);
 
             this.playerIcon = this.addSprite(this.farUnitsGroup, initial, this.player.tile);
             // Shine the icon
@@ -111818,10 +111829,24 @@ var Map = exports.Map = function () {
         value: function createNearTiles(center) {
             var _this2 = this;
 
-            var sector = this.getSector(this.toFarCoords(center));
+            // let sector = this.getSector(this.toFarCoords(center))
             (0, _utils.forEachHexInDist)(center, this.rings - 1, function (coords) {
-                return new _tiles.NearTile(_this2, coords, _this2.nearMapGroup, sector);
+                // TODO: this check is only needed if config.centerView
+                if (_this2.checkInsideMap(coords)) new _tiles.NearTile(_this2, coords, _this2.nearMapGroup /*, sector*/);
             });
+        }
+    }, {
+        key: 'recreateView',
+        value: function recreateView(coords) {
+            if (this.nearMapGroup) {
+                this.nearMapGroup.destroy();
+            }
+            this.nearMapGroup = (0, _utils.createGroup)(this, this.nearRootGroup);
+            this.nearMapGroup.z = 1;
+            this.nearRootGroup.sort('z', _phaserCe2.default.Group.SORT_ASCENDING);
+            this.createNearTiles(coords);
+            this.displayOnlyNearUnits();
+            this.updateAmbientSound();
         }
     }, {
         key: 'zoomInCoords',
@@ -111832,19 +111857,19 @@ var Map = exports.Map = function () {
         key: 'zoomInSector',
         value: function zoomInSector(sector) {
             if (this.zoomedSector != sector) {
-                if (this.nearMapGroup) {
-                    this.nearMapGroup.destroy();
-                }
-                this.nearMapGroup = (0, _utils.createGroup)(this, this.nearRootGroup);
-                this.nearMapGroup.z = 1;
+
                 this.zoomedSector = sector;
                 this.zoomedCoordsNear = this.toNearCoords(sector.coords);
-                this.nearRootGroup.sort('z', _phaserCe2.default.Group.SORT_ASCENDING);
-                this.centerViewport(this.zoomedCoordsNear);
+
+                if (!_config2.default.centerPlayer) {
+                    this.centerViewport(this.zoomedCoordsNear);
+                }
+
+                if (_config2.default.centerView) {
+                    this.recreateView(this.zoomedCoordsNear);
+                }
+
                 this.updateIconCoords();
-                this.createNearTiles(this.zoomedCoordsNear);
-                this.displayOnlyNearUnits();
-                this.updateAmbientSound();
             }
         }
     }, {
@@ -111936,7 +111961,7 @@ var Map = exports.Map = function () {
     }, {
         key: 'checkCoordsInViewport',
         value: function checkCoordsInViewport(coords) {
-            return (0, _utils.axialDistance)(coords, this.zoomedCoordsNear) < this.rings;
+            return (0, _utils.axialDistance)(coords, this.viewportCenter) < this.rings;
         }
 
         // If needed, change current displayed sector to better acomodate
@@ -111957,16 +111982,24 @@ var Map = exports.Map = function () {
             }
             return false;
         }
+
+        // Check if near map coords are inside entire map limits
+
+    }, {
+        key: 'checkInsideMap',
+        value: function checkInsideMap(coords) {
+            // Cheap check first
+            if ((0, _utils.axialDistance)(coords) > this.safeDist) {
+                if (!this.getNearestSectorChecking(coords)) return false;
+            }
+            return true;
+        }
     }, {
         key: 'moveUnit',
         value: function moveUnit(coords, direction) {
             var newCoords = (0, _utils.translate)(coords, direction);
 
-            // Cheap check first
-            if ((0, _utils.axialDistance)(newCoords) > this.safeDist) {
-                if (!this.getNearestSectorChecking(newCoords)) throw 'outOfWorld';
-            }
-            return newCoords;
+            if (this.checkInsideMap(newCoords)) return newCoords;else throw 'outOfWorld';
         }
     }, {
         key: 'update',
@@ -112300,16 +112333,16 @@ var FarTile = exports.FarTile = function (_Tile) {
 var NearTile = exports.NearTile = function (_Tile2) {
     _inherits(NearTile, _Tile2);
 
-    function NearTile(map, mapCoords, group, sector) {
+    function NearTile(map, mapCoords, group /*, sector*/) {
         _classCallCheck(this, NearTile);
 
         var pixelCoords = map.axialToPixelPointy(mapCoords),
             noiseCoords = mapCoords;
 
-        var _this3 = _possibleConstructorReturn(this, (NearTile.__proto__ || Object.getPrototypeOf(NearTile)).call(this, map, pixelCoords, mapCoords, group));
-
-        _this3.sector = sector;
+        // this.sector = sector
         // this.noise = getNoise(noiseCoords.x, noiseCoords.y)
+
+        var _this3 = _possibleConstructorReturn(this, (NearTile.__proto__ || Object.getPrototypeOf(NearTile)).call(this, map, pixelCoords, mapCoords, group));
 
         _this3.updateFrame();
 
@@ -112502,6 +112535,7 @@ var Game = function (_Phaser$State) {
                     if (e.keyCode == _phaserCe2.default.Keyboard.H) _this2.map.toggleHeighmap();
                     if (e.keyCode == _phaserCe2.default.Keyboard.DELETE) _this2.toggleDebugInfo();
                     if (e.keyCode == _phaserCe2.default.Keyboard.HOME) _this2.toggleCenterPlayer();
+                    if (e.keyCode == _phaserCe2.default.Keyboard.END) _this2.toggleCenterView();
                     if (e.keyCode == _phaserCe2.default.Keyboard.ESC) _this2.toggleMenu();
                 }
             };
@@ -112567,6 +112601,12 @@ var Game = function (_Phaser$State) {
         key: 'toggleCenterPlayer',
         value: function toggleCenterPlayer() {
             _config2.default.centerPlayer = !_config2.default.centerPlayer;
+            _config2.default.save();
+        }
+    }, {
+        key: 'toggleCenterView',
+        value: function toggleCenterView() {
+            _config2.default.centerView = !_config2.default.centerView;
             _config2.default.save();
         }
     }, {

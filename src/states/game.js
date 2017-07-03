@@ -22,6 +22,7 @@ export default class Game extends Phaser.State {
                 if(e.keyCode == Phaser.Keyboard.H) this.map.toggleHeighmap()
                 if(e.keyCode == Phaser.Keyboard.DELETE) this.toggleDebugInfo()
                 if(e.keyCode == Phaser.Keyboard.HOME) this.toggleCenterPlayer()
+                if(e.keyCode == Phaser.Keyboard.END) this.toggleCenterView()
                 if(e.keyCode == Phaser.Keyboard.ESC) this.toggleMenu()
             }
         }
@@ -81,6 +82,11 @@ export default class Game extends Phaser.State {
 
     toggleCenterPlayer() {
         config.centerPlayer = !config.centerPlayer
+        config.save()
+    }
+
+    toggleCenterView() {
+        config.centerView = !config.centerView
         config.save()
     }
 

@@ -5,6 +5,7 @@ let defaultConfig = {
     language: null,
     defaultLang: 'en',
     centerPlayer: true,
+    centerView: true,
     keybinds: {
         move: {
             ne: Phaser.Keyboard.E,
