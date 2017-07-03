@@ -6,13 +6,15 @@ import config from '../config'
 export default class Player extends Unit {
     constructor (map, coords) {
         super(map, coords, 31)
-        this.actionThrottleTime = 150
+        this.actionThrottleTime = 200
     }
 
     move(direction) {
         if(super.move(direction)) {
             this.map.changeSector(this.coords)
-            if (config.centerPlayer) this.map.centerViewport(this.coords)
+            if (config.centerPlayer) {
+                this.map.centerViewport(this.coords)
+            }
         }
     }
 

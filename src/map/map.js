@@ -130,14 +130,21 @@ export class Map {
 
     // Center viewport to an axial coord
     centerViewport(center) {
-        this.viewportCenter = center
-        console.log(this.viewportCenter)
         let screen = this.axialToPixelPointy(center)
-        this.nearRootGroup.x = -screen.x
-        this.nearRootGroup.y = -screen.y
-        if (config.centerView) {
-            this.recreateView(center)
+        // this.nearRootGroup.x = -screen.x
+        // this.nearRootGroup.y = -screen.y
+        let tween = this.game.add.tween(this.nearRootGroup).to(
+            { x: -screen.x, y: -screen.y },
+            this.player.actionThrottleTime-10, Phaser.Easing.Linear.None, true)
+        tween.onComplete.add(doCenter, this)
+
+        function doCenter () {
+            this.viewportCenter = center
+            if (config.centerView) {
+                this.recreateView(center)
+            }
         }
+
     }
 
     centerMapOnScreen(height, width) {
@@ -237,18 +244,11 @@ export class Map {
 
     // pixel to hex - pointy top
     pixelToAxialPointy(coords) {
-        // console.log('coords', coords)
-        // console.log('root', this.rootGroup.x, this.rootGroup.y)
-        // console.log('near', this.nearRootGroup.x, this.nearRootGroup.y)
         let scale = this.game.world.scale,
-            // pixelX = (coords.x - this.rootGroup.x - this.nearRootGroup.x) * scale.x,
-            // pixelY = (coords.y - this.rootGroup.y - this.nearRootGroup.y) * scale.y,
             pixelX = coords.x/scale.x - this.rootGroup.x - this.nearRootGroup.x,
             pixelY = coords.y/scale.y - this.rootGroup.y - this.nearRootGroup.y,
             x = pixelX / this.tileWidth - pixelY / (2*this.tilePointyHeightVariationPerRow),
             y = pixelY / this.tilePointyHeightVariationPerRow
-        // console.log('scale', scale)
-        // console.log('pixel', pixelX, pixelY)
 
         // TODO: is this round good enought?
         x = Math.round(x)
@@ -314,7 +314,7 @@ export class Map {
                 this.centerViewport(this.zoomedCoordsNear)
             }
 
-            if (config.centerView) {
+            if (!config.centerView) {
                 this.recreateView(this.zoomedCoordsNear)
             }
 
@@ -426,7 +426,6 @@ export class Map {
 
     moveUnit(coords, direction) {
         let newCoords = translate(coords, direction)
-
         if (this.checkInsideMap(newCoords)) return newCoords
         else throw 'outOfWorld'
     }

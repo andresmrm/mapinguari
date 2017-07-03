@@ -1,3 +1,4 @@
+import Phaser from 'phaser-ce'
 import {randTrue} from '../noiser'
 import {getRandomDirection, axialDistance} from '../map/utils'
 
@@ -23,8 +24,12 @@ export default class Unit {
 
     updateSpriteCoords() {
         let screenCoords = this.map.axialToPixelPointy(this.coords)
-        this.sprite.x = screenCoords.x
-        this.sprite.y = screenCoords.y
+
+        this.game.add.tween(this.sprite).to(
+            { x: screenCoords.x, y: screenCoords.y },
+            this.actionThrottleTime, Phaser.Easing.Linear.None, true)
+        // this.sprite.x = screenCoords.x
+        // this.sprite.y = screenCoords.y
     }
 
     move(direction) {
@@ -47,10 +52,16 @@ export default class Unit {
 
     // Move towards a coords
     moveTo(coords) {
-        let dx = coords.x - this.coords.x,
-            dy = coords.y - this.coords.y
+        // TODO: use A*?
+
+        let dx = Math.sign(coords.x - this.coords.x),
+            dy = Math.sign(coords.y - this.coords.y)
+
+        // Avoid coords -1,-1 or 1,1
+        if (Math.abs(dx + dy) > 1) dx = 0
+
         // TODO: can try to move outside of map!!!!
-        if (dx!=0 || dy!=0) return this.move({x: Math.sign(dx), y: Math.sign(dy)})
+        if (dx!=0 || dy!=0) return this.move({x: dx, y: dy})
         return false
     }
 

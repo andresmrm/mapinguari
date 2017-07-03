@@ -107369,9 +107369,15 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _phaserCe = __webpack_require__(/*! phaser-ce */ 34);
+
+var _phaserCe2 = _interopRequireDefault(_phaserCe);
+
 var _noiser = __webpack_require__(/*! ../noiser */ 26);
 
 var _utils = __webpack_require__(/*! ../map/utils */ 44);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -107404,8 +107410,10 @@ var Unit = function () {
         key: 'updateSpriteCoords',
         value: function updateSpriteCoords() {
             var screenCoords = this.map.axialToPixelPointy(this.coords);
-            this.sprite.x = screenCoords.x;
-            this.sprite.y = screenCoords.y;
+
+            this.game.add.tween(this.sprite).to({ x: screenCoords.x, y: screenCoords.y }, this.actionThrottleTime, _phaserCe2.default.Easing.Linear.None, true);
+            // this.sprite.x = screenCoords.x
+            // this.sprite.y = screenCoords.y
         }
     }, {
         key: 'move',
@@ -107435,10 +107443,16 @@ var Unit = function () {
     }, {
         key: 'moveTo',
         value: function moveTo(coords) {
-            var dx = coords.x - this.coords.x,
-                dy = coords.y - this.coords.y;
+            // TODO: use A*?
+
+            var dx = Math.sign(coords.x - this.coords.x),
+                dy = Math.sign(coords.y - this.coords.y);
+
+            // Avoid coords -1,-1 or 1,1
+            if (Math.abs(dx + dy) > 1) dx = 0;
+
             // TODO: can try to move outside of map!!!!
-            if (dx != 0 || dy != 0) return this.move({ x: Math.sign(dx), y: Math.sign(dy) });
+            if (dx != 0 || dy != 0) return this.move({ x: dx, y: dy });
             return false;
         }
 
@@ -111665,13 +111679,17 @@ var Map = exports.Map = function () {
     }, {
         key: 'centerViewport',
         value: function centerViewport(center) {
-            this.viewportCenter = center;
-            console.log(this.viewportCenter);
             var screen = this.axialToPixelPointy(center);
-            this.nearRootGroup.x = -screen.x;
-            this.nearRootGroup.y = -screen.y;
-            if (_config2.default.centerView) {
-                this.recreateView(center);
+            // this.nearRootGroup.x = -screen.x
+            // this.nearRootGroup.y = -screen.y
+            var tween = this.game.add.tween(this.nearRootGroup).to({ x: -screen.x, y: -screen.y }, this.player.actionThrottleTime - 10, _phaserCe2.default.Easing.Linear.None, true);
+            tween.onComplete.add(doCenter, this);
+
+            function doCenter() {
+                this.viewportCenter = center;
+                if (_config2.default.centerView) {
+                    this.recreateView(center);
+                }
             }
         }
     }, {
@@ -111781,19 +111799,11 @@ var Map = exports.Map = function () {
     }, {
         key: 'pixelToAxialPointy',
         value: function pixelToAxialPointy(coords) {
-            // console.log('coords', coords)
-            // console.log('root', this.rootGroup.x, this.rootGroup.y)
-            // console.log('near', this.nearRootGroup.x, this.nearRootGroup.y)
             var scale = this.game.world.scale,
-
-            // pixelX = (coords.x - this.rootGroup.x - this.nearRootGroup.x) * scale.x,
-            // pixelY = (coords.y - this.rootGroup.y - this.nearRootGroup.y) * scale.y,
-            pixelX = coords.x / scale.x - this.rootGroup.x - this.nearRootGroup.x,
+                pixelX = coords.x / scale.x - this.rootGroup.x - this.nearRootGroup.x,
                 pixelY = coords.y / scale.y - this.rootGroup.y - this.nearRootGroup.y,
                 x = pixelX / this.tileWidth - pixelY / (2 * this.tilePointyHeightVariationPerRow),
                 y = pixelY / this.tilePointyHeightVariationPerRow;
-            // console.log('scale', scale)
-            // console.log('pixel', pixelX, pixelY)
 
             // TODO: is this round good enought?
             x = Math.round(x);
@@ -111865,7 +111875,7 @@ var Map = exports.Map = function () {
                     this.centerViewport(this.zoomedCoordsNear);
                 }
 
-                if (_config2.default.centerView) {
+                if (!_config2.default.centerView) {
                     this.recreateView(this.zoomedCoordsNear);
                 }
 
@@ -111998,7 +112008,6 @@ var Map = exports.Map = function () {
         key: 'moveUnit',
         value: function moveUnit(coords, direction) {
             var newCoords = (0, _utils.translate)(coords, direction);
-
             if (this.checkInsideMap(newCoords)) return newCoords;else throw 'outOfWorld';
         }
     }, {
@@ -112973,7 +112982,7 @@ var Player = function (_Unit) {
 
         var _this = _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this, map, coords, 31));
 
-        _this.actionThrottleTime = 150;
+        _this.actionThrottleTime = 200;
         return _this;
     }
 
@@ -112982,7 +112991,9 @@ var Player = function (_Unit) {
         value: function move(direction) {
             if (_get(Player.prototype.__proto__ || Object.getPrototypeOf(Player.prototype), 'move', this).call(this, direction)) {
                 this.map.changeSector(this.coords);
-                if (_config2.default.centerPlayer) this.map.centerViewport(this.coords);
+                if (_config2.default.centerPlayer) {
+                    this.map.centerViewport(this.coords);
+                }
             }
         }
     }, {
