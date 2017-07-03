@@ -1,5 +1,6 @@
 import Phaser from 'phaser-ce'
 
+import config from '../config'
 import {getNoise} from '../noiser'
 import {cubeToAxial, axialToCube, cubeRound, forEachHexInDist, axialDistance} from './utils'
 
@@ -30,11 +31,21 @@ export class Tile extends Phaser.Sprite {
         this.map = map
         this.map.setAnchor(this)
 
-        this.inputEnabled = true
-        // this.input.useHandCursor = true
-        this.input.pixelPerfectOver = true
-        this.events.onInputOver.add(over, this)
-        this.events.onInputOut.add(out, this)
+        if (config.tileOver) {
+            this.inputEnabled = true
+            // this.input.useHandCursor = true
+            this.input.pixelPerfectOver = true
+            this.events.onInputOver.add(over, this)
+            this.events.onInputOut.add(out, this)
+        }
+    }
+    appear(time) {
+        this.alpha = 0
+        this.map.game.add.tween(this).to({alpha:1}, time, Phaser.Easing.Linear.None, true)
+    }
+    disappear(time) {
+        let tween = this.map.game.add.tween(this).to({alpha:0}, time, Phaser.Easing.Linear.None, true)
+        tween.onComplete.add(() => this.destroy())
     }
 }
 

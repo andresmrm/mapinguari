@@ -16,7 +16,7 @@ import Heightmap from './heightmap'
 import Store from './store'
 import {FarTile, NearTile} from './tiles'
 import {pointyDirections, createGroup, axialDistance, cubeToAxial, axialToCube,
-        invMatrix, cubeRound, translate, forEachHexInDist} from './utils'
+        invMatrix, cubeRound, translate, forEachHexInDist, Axial} from './utils'
 
 
 export class Map {
@@ -48,6 +48,9 @@ export class Map {
         this.nearUnitsGroup = createGroup(this, this.nearRootGroup)
         this.nearUnitsGroup.z = 2
         this.nearRootGroup.exists = false
+        this.nearMapGroup = createGroup(this, this.nearRootGroup)
+        this.nearMapGroup.z = 1
+        this.nearRootGroup.sort('z', Phaser.Group.SORT_ASCENDING)
 
         this.farRootGroup = createGroup(this, this.rootGroup)
         this.farMapGroup = createGroup(this, this.farRootGroup)
@@ -276,25 +279,46 @@ export class Map {
     }
 
     createNearTiles(center) {
+        let oldTiles = {}
+        this.nearMapGroup.forEach((tile) => {
+            oldTiles[tile.coords.str()] = tile
+        })
+
         // let sector = this.getSector(this.toFarCoords(center))
+
+        // Create new tiles and leave in oldTiles only the
+        // ones that should be destroyed
         forEachHexInDist(
             center,
             this.rings-1,
             (coords) => {
                 // TODO: this check is only needed if config.centerView
-                if (this.checkInsideMap(coords))
-                    new NearTile(this, coords, this.nearMapGroup/*, sector*/)
+                if (this.checkInsideMap(coords)) {
+                    if (!oldTiles[coords.str()]) {
+                        let tile = new NearTile(this, coords, this.nearMapGroup/*, sector*/)
+                        tile.appear(this.player.actionThrottleTime-10)
+                    }
+                    delete oldTiles[coords.str()]
+                }
             }
         )
+
+        Object.keys(oldTiles).forEach(
+            (key) => {
+                oldTiles[key].disappear(this.player.actionThrottleTime-10)
+            }
+        )
+
+        this.nearMapGroup.sort('y', Phaser.Group.SORT_ASCENDING)
     }
 
     recreateView(coords) {
-        if (this.nearMapGroup) {
-            this.nearMapGroup.destroy()
-        }
-        this.nearMapGroup = createGroup(this, this.nearRootGroup)
-        this.nearMapGroup.z = 1
-        this.nearRootGroup.sort('z', Phaser.Group.SORT_ASCENDING)
+        // if (this.nearMapGroup) {
+        //     this.nearMapGroup.destroy()
+        // }
+        // this.nearMapGroup = createGroup(this, this.nearRootGroup)
+        // this.nearMapGroup.z = 1
+        // this.nearRootGroup.sort('z', Phaser.Group.SORT_ASCENDING)
         this.createNearTiles(coords)
         this.displayOnlyNearUnits()
         this.updateAmbientSound()

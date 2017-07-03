@@ -69,7 +69,8 @@ export function axialDistance(i, j=null) {
 }
 
 export function cubeToAxial(cubic) {
-    return {x: cubic.x, y: cubic.z}
+    // return {x: cubic.x, y: cubic.z}
+    return new Axial(cubic.x, cubic.z)
 }
 
 export function axialToCube(coords) {
@@ -164,6 +165,25 @@ export function findNearest(center, maxRadius, testFn) {
         }
     }
     return null
+}
+
+
+// class for an axial coord
+export class Axial {
+    // allows x=x y=y or x={x,y} y=null
+    constructor(x, y=null) {
+        if (y === null) {
+            this.x = x.x
+            this.y = x.y
+        } else {
+            this.x = x
+            this.y = y
+        }
+    }
+    // to string
+    str() {
+        return this.x + ',' + this.y
+    }
 }
 
 

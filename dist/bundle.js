@@ -459,6 +459,7 @@ var defaultConfig = {
     defaultLang: 'en',
     centerPlayer: true,
     centerView: true,
+    tileOver: false,
     keybinds: {
         move: {
             ne: _phaserCe2.default.Keyboard.E,
@@ -107029,7 +107030,12 @@ module.exports = function(key){
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.pointyDirections = undefined;
+exports.Axial = exports.pointyDirections = undefined;
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(); /*
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       Based on: http://www.redblobgames.com/grids/hexagons/
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     */
+
 exports.getRandomDirection = getRandomDirection;
 exports.createGroup = createGroup;
 exports.translate = translate;
@@ -107047,6 +107053,8 @@ exports.findNearest = findNearest;
 
 var _noiser = __webpack_require__(/*! ../noiser */ 26);
 
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 // let directions = {
 //     n: {x:1, y:-2},
 //     ne: {x:2, y:-1},
@@ -107063,9 +107071,7 @@ var pointyDirections = exports.pointyDirections = {
     sw: { x: -1, y: 1 },
     w: { x: -1, y: 0 },
     nw: { x: 0, y: -1 }
-}; /*
-     Based on: http://www.redblobgames.com/grids/hexagons/
-   */
+};
 
 var pointyDirArray = [];
 Object.keys(pointyDirections).forEach(function (key) {
@@ -107109,7 +107115,8 @@ function axialDistance(i) {
 }
 
 function cubeToAxial(cubic) {
-    return { x: cubic.x, y: cubic.z };
+    // return {x: cubic.x, y: cubic.z}
+    return new Axial(cubic.x, cubic.z);
 }
 
 function axialToCube(coords) {
@@ -107200,6 +107207,36 @@ function findNearest(center, maxRadius, testFn) {
     }
     return null;
 }
+
+// class for an axial coord
+
+var Axial = exports.Axial = function () {
+    // allows x=x y=y or x={x,y} y=null
+    function Axial(x) {
+        var y = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+        _classCallCheck(this, Axial);
+
+        if (y === null) {
+            this.x = x.x;
+            this.y = x.y;
+        } else {
+            this.x = x;
+            this.y = y;
+        }
+    }
+    // to string
+
+
+    _createClass(Axial, [{
+        key: 'str',
+        value: function str() {
+            return this.x + ',' + this.y;
+        }
+    }]);
+
+    return Axial;
+}();
 
 // // oddq_to_cube
 // function pointyCubeToOffset(cube) {
@@ -111587,6 +111624,9 @@ var Map = exports.Map = function () {
         this.nearUnitsGroup = (0, _utils.createGroup)(this, this.nearRootGroup);
         this.nearUnitsGroup.z = 2;
         this.nearRootGroup.exists = false;
+        this.nearMapGroup = (0, _utils.createGroup)(this, this.nearRootGroup);
+        this.nearMapGroup.z = 1;
+        this.nearRootGroup.sort('z', _phaserCe2.default.Group.SORT_ASCENDING);
 
         this.farRootGroup = (0, _utils.createGroup)(this, this.rootGroup);
         this.farMapGroup = (0, _utils.createGroup)(this, this.farRootGroup);
@@ -111839,21 +111879,41 @@ var Map = exports.Map = function () {
         value: function createNearTiles(center) {
             var _this2 = this;
 
+            var oldTiles = {};
+            this.nearMapGroup.forEach(function (tile) {
+                oldTiles[tile.coords.str()] = tile;
+            });
+
             // let sector = this.getSector(this.toFarCoords(center))
+
+            // Create new tiles and leave in oldTiles only the
+            // ones that should be destroyed
             (0, _utils.forEachHexInDist)(center, this.rings - 1, function (coords) {
                 // TODO: this check is only needed if config.centerView
-                if (_this2.checkInsideMap(coords)) new _tiles.NearTile(_this2, coords, _this2.nearMapGroup /*, sector*/);
+                if (_this2.checkInsideMap(coords)) {
+                    if (!oldTiles[coords.str()]) {
+                        var tile = new _tiles.NearTile(_this2, coords, _this2.nearMapGroup /*, sector*/);
+                        tile.appear(_this2.player.actionThrottleTime - 10);
+                    }
+                    delete oldTiles[coords.str()];
+                }
             });
+
+            Object.keys(oldTiles).forEach(function (key) {
+                oldTiles[key].disappear(_this2.player.actionThrottleTime - 10);
+            });
+
+            this.nearMapGroup.sort('y', _phaserCe2.default.Group.SORT_ASCENDING);
         }
     }, {
         key: 'recreateView',
         value: function recreateView(coords) {
-            if (this.nearMapGroup) {
-                this.nearMapGroup.destroy();
-            }
-            this.nearMapGroup = (0, _utils.createGroup)(this, this.nearRootGroup);
-            this.nearMapGroup.z = 1;
-            this.nearRootGroup.sort('z', _phaserCe2.default.Group.SORT_ASCENDING);
+            // if (this.nearMapGroup) {
+            //     this.nearMapGroup.destroy()
+            // }
+            // this.nearMapGroup = createGroup(this, this.nearRootGroup)
+            // this.nearMapGroup.z = 1
+            // this.nearRootGroup.sort('z', Phaser.Group.SORT_ASCENDING)
             this.createNearTiles(coords);
             this.displayOnlyNearUnits();
             this.updateAmbientSound();
@@ -112245,6 +112305,10 @@ var _phaserCe = __webpack_require__(/*! phaser-ce */ 34);
 
 var _phaserCe2 = _interopRequireDefault(_phaserCe);
 
+var _config = __webpack_require__(/*! ../config */ 21);
+
+var _config2 = _interopRequireDefault(_config);
+
 var _noiser = __webpack_require__(/*! ../noiser */ 26);
 
 var _utils = __webpack_require__(/*! ./utils */ 44);
@@ -112287,13 +112351,33 @@ var Tile = exports.Tile = function (_Phaser$Sprite) {
         _this.map = map;
         _this.map.setAnchor(_this);
 
-        _this.inputEnabled = true;
-        // this.input.useHandCursor = true
-        _this.input.pixelPerfectOver = true;
-        _this.events.onInputOver.add(over, _this);
-        _this.events.onInputOut.add(out, _this);
+        if (_config2.default.tileOver) {
+            _this.inputEnabled = true;
+            // this.input.useHandCursor = true
+            _this.input.pixelPerfectOver = true;
+            _this.events.onInputOver.add(over, _this);
+            _this.events.onInputOut.add(out, _this);
+        }
         return _this;
     }
+
+    _createClass(Tile, [{
+        key: 'appear',
+        value: function appear(time) {
+            this.alpha = 0;
+            this.map.game.add.tween(this).to({ alpha: 1 }, time, _phaserCe2.default.Easing.Linear.None, true);
+        }
+    }, {
+        key: 'disappear',
+        value: function disappear(time) {
+            var _this2 = this;
+
+            var tween = this.map.game.add.tween(this).to({ alpha: 0 }, time, _phaserCe2.default.Easing.Linear.None, true);
+            tween.onComplete.add(function () {
+                return _this2.destroy();
+            });
+        }
+    }]);
 
     return Tile;
 }(_phaserCe2.default.Sprite);
@@ -112308,19 +112392,19 @@ var FarTile = exports.FarTile = function (_Tile) {
             noiseCoords = map.toNearCoords(mapCoords),
             noise = (0, _noiser.getNoise)(noiseCoords.x, noiseCoords.y);
 
-        var _this2 = _possibleConstructorReturn(this, (FarTile.__proto__ || Object.getPrototypeOf(FarTile)).call(this, map, pixelCoords, mapCoords, group));
+        var _this3 = _possibleConstructorReturn(this, (FarTile.__proto__ || Object.getPrototypeOf(FarTile)).call(this, map, pixelCoords, mapCoords, group));
 
-        _this2.noise = 0;
-        (0, _utils.forEachHexInDist)(map.toNearCoords(mapCoords), _this2.map.nearRings - 1, function (coords) {
-            _this2.noise += (0, _noiser.getNoise)(coords.x, coords.y);
+        _this3.noise = 0;
+        (0, _utils.forEachHexInDist)(map.toNearCoords(mapCoords), _this3.map.nearRings - 1, function (coords) {
+            _this3.noise += (0, _noiser.getNoise)(coords.x, coords.y);
         });
-        _this2.noise = _this2.noise / _this2.map.numTilesPerSector;
+        _this3.noise = _this3.noise / _this3.map.numTilesPerSector;
 
-        _this2.updateFrame();
+        _this3.updateFrame();
 
         // this.input.pixelPerfectClick = true
         // this.events.onInputUp.add(clicked, this)
-        return _this2;
+        return _this3;
     }
 
     _createClass(FarTile, [{
@@ -112351,15 +112435,15 @@ var NearTile = exports.NearTile = function (_Tile2) {
         // this.sector = sector
         // this.noise = getNoise(noiseCoords.x, noiseCoords.y)
 
-        var _this3 = _possibleConstructorReturn(this, (NearTile.__proto__ || Object.getPrototypeOf(NearTile)).call(this, map, pixelCoords, mapCoords, group));
+        var _this4 = _possibleConstructorReturn(this, (NearTile.__proto__ || Object.getPrototypeOf(NearTile)).call(this, map, pixelCoords, mapCoords, group));
 
-        _this3.updateFrame();
+        _this4.updateFrame();
 
         // let d = cubeDistance(axialToCube(coords), {x:0,y:0,z:0})
         // if (d <= (this.rings-1)) this.alpha=0.75
         // if (d <= (this.rings-this.transitionRings-1)) this.alpha=0.85
         // this.alpha = Math.abs(sector.x)/5 + Math.abs(sector.y)/10
-        return _this3;
+        return _this4;
     }
 
     _createClass(NearTile, [{

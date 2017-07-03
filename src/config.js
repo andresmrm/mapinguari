@@ -6,6 +6,7 @@ let defaultConfig = {
     defaultLang: 'en',
     centerPlayer: true,
     centerView: true,
+    tileOver: false,
     keybinds: {
         move: {
             ne: Phaser.Keyboard.E,
