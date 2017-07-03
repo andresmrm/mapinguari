@@ -38,7 +38,7 @@ export default class Player extends Unit {
             )
 
             // Check pointer (mouse or touch) and move
-            if (this.game.input.activePointer.isDown) {
+            if (config.followMouse || this.game.input.activePointer.isDown) {
                 let screenCoords = {x: this.game.input.x, y: this.game.input.y}
                 let mapCoords = this.map.pixelToAxialPointy(screenCoords)
                 this.moveTo(mapCoords)

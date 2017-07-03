@@ -460,6 +460,7 @@ var defaultConfig = {
     centerPlayer: true,
     centerView: true,
     tileOver: false,
+    followMouse: false,
     keybinds: {
         move: {
             ne: _phaserCe2.default.Keyboard.E,
@@ -111328,8 +111329,8 @@ exports.default = {
         pt: '...'
     },
     '-movekeys': {
-        en: 'Use these keys to move:',
-        pt: 'Use essas teclas para se mover:'
+        en: 'To move you click and hold the primary mouse button (press SPACEBAR to enable auto follow mouse), touch the screen, or use these keys:',
+        pt: 'Para se move você pode segurar o botão principal do mouse (aperte a BARRA DE ESPAÇO para seguir o mouse automaticamente), tocar a tela ou usar essas teclas:'
     },
     '-mapkey': {
         en: 'And this to open the map:',
@@ -112630,6 +112631,7 @@ var Game = function (_Phaser$State) {
                     if (e.keyCode == _phaserCe2.default.Keyboard.HOME) _this2.toggleCenterPlayer();
                     if (e.keyCode == _phaserCe2.default.Keyboard.END) _this2.toggleCenterView();
                     if (e.keyCode == _phaserCe2.default.Keyboard.ESC) _this2.toggleMenu();
+                    if (e.keyCode == _phaserCe2.default.Keyboard.SPACEBAR) _this2.toggleFollowMouse();
                 }
             };
 
@@ -112700,6 +112702,12 @@ var Game = function (_Phaser$State) {
         key: 'toggleCenterView',
         value: function toggleCenterView() {
             _config2.default.centerView = !_config2.default.centerView;
+            _config2.default.save();
+        }
+    }, {
+        key: 'toggleFollowMouse',
+        value: function toggleFollowMouse() {
+            _config2.default.followMouse = !_config2.default.followMouse;
             _config2.default.save();
         }
     }, {
@@ -113103,7 +113111,7 @@ var Player = function (_Unit) {
                 });
 
                 // Check pointer (mouse or touch) and move
-                if (this.game.input.activePointer.isDown) {
+                if (_config2.default.followMouse || this.game.input.activePointer.isDown) {
                     var screenCoords = { x: this.game.input.x, y: this.game.input.y };
                     var mapCoords = this.map.pixelToAxialPointy(screenCoords);
                     this.moveTo(mapCoords);

@@ -7,6 +7,7 @@ let defaultConfig = {
     centerPlayer: true,
     centerView: true,
     tileOver: false,
+    followMouse: false,
     keybinds: {
         move: {
             ne: Phaser.Keyboard.E,

@@ -24,6 +24,7 @@ export default class Game extends Phaser.State {
                 if(e.keyCode == Phaser.Keyboard.HOME) this.toggleCenterPlayer()
                 if(e.keyCode == Phaser.Keyboard.END) this.toggleCenterView()
                 if(e.keyCode == Phaser.Keyboard.ESC) this.toggleMenu()
+                if(e.keyCode == Phaser.Keyboard.SPACEBAR) this.toggleFollowMouse()
             }
         }
 
@@ -87,6 +88,11 @@ export default class Game extends Phaser.State {
 
     toggleCenterView() {
         config.centerView = !config.centerView
+        config.save()
+    }
+
+    toggleFollowMouse() {
+        config.followMouse = !config.followMouse
         config.save()
     }
 
