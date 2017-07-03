@@ -111764,6 +111764,31 @@ var Map = exports.Map = function () {
                 y = this.tileHeight * (coords.y + coords.x / 2);
             return { x: x, y: y };
         }
+
+        // pixel to hex - pointy top
+
+    }, {
+        key: 'pixelToAxialPointy',
+        value: function pixelToAxialPointy(coords) {
+            // console.log('coords', coords)
+            // console.log('root', this.rootGroup.x, this.rootGroup.y)
+            // console.log('near', this.nearRootGroup.x, this.nearRootGroup.y)
+            var scale = this.game.world.scale,
+
+            // pixelX = (coords.x - this.rootGroup.x - this.nearRootGroup.x) * scale.x,
+            // pixelY = (coords.y - this.rootGroup.y - this.nearRootGroup.y) * scale.y,
+            pixelX = coords.x / scale.x - this.rootGroup.x - this.nearRootGroup.x,
+                pixelY = coords.y / scale.y - this.rootGroup.y - this.nearRootGroup.y,
+                x = pixelX / this.tileWidth - pixelY / (2 * this.tilePointyHeightVariationPerRow),
+                y = pixelY / this.tilePointyHeightVariationPerRow;
+            // console.log('scale', scale)
+            // console.log('pixel', pixelX, pixelY)
+
+            // TODO: is this round good enought?
+            x = Math.round(x);
+            y = Math.round(y);
+            return { x: x, y: y };
+        }
     }, {
         key: 'addSprite',
         value: function addSprite(group, coords) {
@@ -112878,6 +112903,8 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
 var _phaserCe = __webpack_require__(/*! phaser-ce */ 34);
 
 var _phaserCe2 = _interopRequireDefault(_phaserCe);
@@ -112911,10 +112938,9 @@ var Player = function (_Unit) {
     }
 
     _createClass(Player, [{
-        key: 'playerMove',
-        value: function playerMove(direction) {
-            // if(this.throttleMove(direction, this.moveThrottleTime)) {
-            if (this.move(direction)) {
+        key: 'move',
+        value: function move(direction) {
+            if (_get(Player.prototype.__proto__ || Object.getPrototypeOf(Player.prototype), 'move', this).call(this, direction)) {
                 this.map.changeSector(this.coords);
                 if (_config2.default.centerPlayer) this.map.centerViewport(this.coords);
             }
@@ -112930,16 +112956,23 @@ var Player = function (_Unit) {
             var _this2 = this;
 
             if (!this.map.gameEnded) {
+
                 // Check move keys and move
                 var moveKeys = _config2.default.keybinds.move,
                     moved = false;
                 Object.keys(moveKeys).forEach(function (dir) {
-                    // console.log(moveKeys[dir], this.game.input.keyboard.isDown(moveKeys[dir]))
                     if (!moved && _this2.game.input.keyboard.isDown(moveKeys[dir])) {
-                        _this2.playerMove(dir);
+                        _this2.move(dir);
                         moved = true;
                     }
                 });
+
+                // Check pointer (mouse or touch) and move
+                if (this.game.input.activePointer.isDown) {
+                    var screenCoords = { x: this.game.input.x, y: this.game.input.y };
+                    var mapCoords = this.map.pixelToAxialPointy(screenCoords);
+                    this.moveTo(mapCoords);
+                }
             }
         }
     }]);

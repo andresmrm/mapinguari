@@ -225,6 +225,27 @@ export class Map {
         return {x, y}
     }
 
+    // pixel to hex - pointy top
+    pixelToAxialPointy(coords) {
+        // console.log('coords', coords)
+        // console.log('root', this.rootGroup.x, this.rootGroup.y)
+        // console.log('near', this.nearRootGroup.x, this.nearRootGroup.y)
+        let scale = this.game.world.scale,
+            // pixelX = (coords.x - this.rootGroup.x - this.nearRootGroup.x) * scale.x,
+            // pixelY = (coords.y - this.rootGroup.y - this.nearRootGroup.y) * scale.y,
+            pixelX = coords.x/scale.x - this.rootGroup.x - this.nearRootGroup.x,
+            pixelY = coords.y/scale.y - this.rootGroup.y - this.nearRootGroup.y,
+            x = pixelX / this.tileWidth - pixelY / (2*this.tilePointyHeightVariationPerRow),
+            y = pixelY / this.tilePointyHeightVariationPerRow
+        // console.log('scale', scale)
+        // console.log('pixel', pixelX, pixelY)
+
+        // TODO: is this round good enought?
+        x = Math.round(x)
+        y = Math.round(y)
+        return {x, y}
+    }
+
     addSprite(group, coords, tile=0) {
         let sprite = group.create(coords.x, coords.y, 'tiles', tile)
         this.setAnchor(sprite)

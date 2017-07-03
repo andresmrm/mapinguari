@@ -9,9 +9,8 @@ export default class Player extends Unit {
         this.actionThrottleTime = 150
     }
 
-    playerMove(direction) {
-        // if(this.throttleMove(direction, this.moveThrottleTime)) {
-        if(this.move(direction)) {
+    move(direction) {
+        if(super.move(direction)) {
             this.map.changeSector(this.coords)
             if (config.centerPlayer) this.map.centerViewport(this.coords)
         }
@@ -23,18 +22,26 @@ export default class Player extends Unit {
 
     live() {
         if (!this.map.gameEnded) {
+
             // Check move keys and move
             let moveKeys = config.keybinds.move,
                 moved = false
             Object.keys(moveKeys).forEach(
                 (dir) => {
-                    // console.log(moveKeys[dir], this.game.input.keyboard.isDown(moveKeys[dir]))
                     if (!moved && this.game.input.keyboard.isDown(moveKeys[dir])) {
-                        this.playerMove(dir)
+                        this.move(dir)
                         moved = true
                     }
                 }
             )
+
+            // Check pointer (mouse or touch) and move
+            if (this.game.input.activePointer.isDown) {
+                let screenCoords = {x: this.game.input.x, y: this.game.input.y}
+                let mapCoords = this.map.pixelToAxialPointy(screenCoords)
+                this.moveTo(mapCoords)
+            }
+
         }
     }
 }
