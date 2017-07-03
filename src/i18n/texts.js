@@ -10,8 +10,8 @@ export default {
         pt: 'O <a href="https://pt.wikipedia.org/wiki/Mapinguari" target="_blank">Mapinguari</a> é uma das criaturas míticas da Amazônia. Geralmente ele não se preocupa muito em proteger a floresta. Mas na velocidade em que ela tem sido destruída atualmente, ele não teve muita escolha.'
     },
     '-about': {
-        en: '...',
-        pt: '...'
+        en: 'Free software game made by Andrés Martano (andres@inventati.org). <a href="https://gitlab.com/andresmrm/mapinguari">Check source and full credits!</a>',
+        pt: 'Um jogo software livre feito por Andrés Martano (andres@inventati.org). <a href="https://gitlab.com/andresmrm/mapinguari">Veja o código fonte e créditos!</a>',
     },
     '-movekeys': {
         en: 'To move you click and hold the primary mouse button (press SPACEBAR to enable auto follow mouse), touch the screen, or use these keys:',
