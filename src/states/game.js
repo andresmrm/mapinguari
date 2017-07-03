@@ -34,7 +34,8 @@ export default class Game extends Phaser.State {
             this.game.scale.setGameSize(window.innerWidth, window.innerHeight)
             let scaleH = window.innerHeight / this.map.mapTopOffset/2,
                 scaleW = window.innerWidth / this.map.mapLeftOffset/2,
-                scale = Math.min(scaleH, scaleW)
+                scale = Math.round(Math.min(scaleH, scaleW))
+            if (scale == 0) scale = 1
             this.game.world.scale.setTo(scale, scale)
             this.map.centerMapOnScreen(
                 window.innerHeight/scale, window.innerWidth/scale)
