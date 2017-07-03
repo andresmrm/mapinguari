@@ -17,7 +17,7 @@ export default class Unit {
         this.last_action = 0
         this.initialFear = 4
         this.fear = this.initialFear
-        this.actionThrottleTime = 150
+        this.actionThrottleTime = 200
         this.isFleeing = false
         this.checkUnitInViewport()
     }
@@ -47,6 +47,10 @@ export default class Unit {
     // Play sound, reduce volume with distance
     playSound(name) {
         let volume = 1 / (axialDistance(this.coords, this.map.player.coords)*0.8)**(0.7)
+
+        // Avoid too loud sound
+        volume = volume > 2 ? 2 : volume
+
         if (volume > 0.1) this.map.game.playSound(name, volume)
     }
 

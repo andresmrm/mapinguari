@@ -107425,7 +107425,7 @@ var Unit = function () {
         this.last_action = 0;
         this.initialFear = 4;
         this.fear = this.initialFear;
-        this.actionThrottleTime = 150;
+        this.actionThrottleTime = 200;
         this.isFleeing = false;
         this.checkUnitInViewport();
     }
@@ -107459,6 +107459,10 @@ var Unit = function () {
         key: 'playSound',
         value: function playSound(name) {
             var volume = 1 / ((0, _utils.axialDistance)(this.coords, this.map.player.coords) * 0.8) ** 0.7;
+
+            // Avoid too loud sound
+            volume = volume > 2 ? 2 : volume;
+
             if (volume > 0.1) this.map.game.playSound(name, volume);
         }
 
@@ -111357,8 +111361,8 @@ exports.default = {
         pt: 'A floresta está condenada!'
     },
     '-defeatimpossible': {
-        en: 'Yeah... The Mapinguari can\'t do it alone...',
-        pt: 'Sozinho o Mapinguari não vai conseguir...'
+        en: 'The forest is doomed! Yeah... The Mapinguari can\'t do it alone...',
+        pt: 'A floresta está condenada! É... Sozinho o Mapinguari não vai conseguir...'
     },
     'we lost!': {
         en: '',
@@ -111610,7 +111614,7 @@ var Map = exports.Map = function () {
         this.tileFlatWidthVariationPerColumn = 26;
 
         // TODO: Allow different number of far and near rings
-        this.rings = 8;
+        this.rings = 6;
         this.farRings = this.rings;
         this.nearRings = this.rings;
 
@@ -111723,7 +111727,7 @@ var Map = exports.Map = function () {
             var screen = this.axialToPixelPointy(center);
             // this.nearRootGroup.x = -screen.x
             // this.nearRootGroup.y = -screen.y
-            var tween = this.game.add.tween(this.nearRootGroup).to({ x: -screen.x, y: -screen.y }, this.player.actionThrottleTime - 10, _phaserCe2.default.Easing.Linear.None, true);
+            var tween = this.game.add.tween(this.nearRootGroup).to({ x: -screen.x, y: -screen.y }, this.moveAnimationTime(), _phaserCe2.default.Easing.Linear.None, true);
             tween.onComplete.add(doCenter, this);
 
             function doCenter() {
@@ -111732,6 +111736,11 @@ var Map = exports.Map = function () {
                     this.recreateView(center);
                 }
             }
+        }
+    }, {
+        key: 'moveAnimationTime',
+        value: function moveAnimationTime() {
+            return this.player.actionThrottleTime;
         }
     }, {
         key: 'centerMapOnScreen',
@@ -111849,6 +111858,7 @@ var Map = exports.Map = function () {
             // TODO: is this round good enought?
             x = Math.round(x);
             y = Math.round(y);
+            // return cubeToAxial(cubeRound(axialToCube({x, y})))
             return { x: x, y: y };
         }
     }, {
@@ -111894,14 +111904,14 @@ var Map = exports.Map = function () {
                 if (_this2.checkInsideMap(coords)) {
                     if (!oldTiles[coords.str()]) {
                         var tile = new _tiles.NearTile(_this2, coords, _this2.nearMapGroup /*, sector*/);
-                        tile.appear(_this2.player.actionThrottleTime - 10);
+                        tile.appear(_this2.moveAnimationTime());
                     }
                     delete oldTiles[coords.str()];
                 }
             });
 
             Object.keys(oldTiles).forEach(function (key) {
-                oldTiles[key].disappear(_this2.player.actionThrottleTime - 10);
+                oldTiles[key].disappear(_this2.moveAnimationTime());
             });
 
             this.nearMapGroup.sort('y', _phaserCe2.default.Group.SORT_ASCENDING);
@@ -112810,7 +112820,7 @@ var Game = function (_Phaser$State) {
         value: function defeat() {
             this.forestSound.fadeTo(2000, 0);
             this.windSound.fadeTo(2000, 1);
-            if (this.map.month > 3) this.game.gui.add(['defeatimpossible']);else this.game.gui.add(['defeat']);
+            if (this.map.month > 2) this.game.gui.add(['defeatimpossible']);else this.game.gui.add(['defeat']);
         }
     }, {
         key: 'win',
@@ -113074,7 +113084,7 @@ var Player = function (_Unit) {
 
         var _this = _possibleConstructorReturn(this, (Player.__proto__ || Object.getPrototypeOf(Player)).call(this, map, coords, 31));
 
-        _this.actionThrottleTime = 200;
+        _this.actionThrottleTime = 250;
         return _this;
     }
 

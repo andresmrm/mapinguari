@@ -6,7 +6,7 @@ import config from '../config'
 export default class Player extends Unit {
     constructor (map, coords) {
         super(map, coords, 31)
-        this.actionThrottleTime = 200
+        this.actionThrottleTime = 250
     }
 
     move(direction) {
