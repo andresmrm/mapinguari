@@ -111330,7 +111330,7 @@ exports.default = {
     },
     '-movekeys': {
         en: 'To move you click and hold the primary mouse button (press SPACEBAR to enable auto follow mouse), touch the screen, or use these keys:',
-        pt: 'Para se move você pode segurar o botão principal do mouse (aperte a BARRA DE ESPAÇO para seguir o mouse automaticamente), tocar a tela ou usar essas teclas:'
+        pt: 'Para se mover você pode segurar o botão principal do mouse (aperte a BARRA DE ESPAÇO para seguir o mouse automaticamente), tocar a tela ou usar essas teclas:'
     },
     '-mapkey': {
         en: 'And this to open the map:',
