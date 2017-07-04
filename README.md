@@ -2,7 +2,7 @@
 
 In this game you are the fearsome Mapinguari and must scare some villans out of the forest.
 
-[Play!](http://andresmrm.gitlab.io/mapinguari/)
+[**Play!**](http://andresmrm.gitlab.io/mapinguari/)
 
 ## Repositories
 
