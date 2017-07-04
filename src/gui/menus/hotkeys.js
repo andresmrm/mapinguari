@@ -27,7 +27,7 @@ export default class ChangeHotkeys extends Menu {
         let keys = config.keybinds
         Object.keys(keys.move).forEach((dir, i) => {
             let text = (i+1) + ' ' + t(directions[dir]) + ': '
-            text += keyCodeToStr(keys.move[dir]).toUpperCase()
+            text += String.fromCharCode(keys.move[dir]).toUpperCase()
             this.addButton(text, () => {
                 this.changingKey = (char) => {
                     keys.move[dir] = char
@@ -36,7 +36,7 @@ export default class ChangeHotkeys extends Menu {
         })
 
         let text = t('open map') + ': '
-        text += keyCodeToStr(keys.map).toUpperCase()
+        text += String.fromCharCode(keys.map).toUpperCase()
         this.addButton(text, () => {
             this.changingKey = (char) => {
                 keys.map = char
