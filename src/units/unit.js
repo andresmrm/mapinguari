@@ -49,7 +49,7 @@ export default class Unit {
 
     // Play sound, reduce volume with distance
     playSound(name) {
-        let volume = 1 / (axialDistance(this.coords, this.map.player.coords)*0.8)**(0.7)
+        let volume = 1 / Math.pow(axialDistance(this.coords, this.map.player.coords)*0.8, 0.7)
 
         // Avoid too loud sound
         volume = volume > 2 ? 2 : volume

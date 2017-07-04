@@ -107463,7 +107463,7 @@ var Unit = function () {
     }, {
         key: 'playSound',
         value: function playSound(name) {
-            var volume = 1 / ((0, _utils.axialDistance)(this.coords, this.map.player.coords) * 0.8) ** 0.7;
+            var volume = 1 / Math.pow((0, _utils.axialDistance)(this.coords, this.map.player.coords) * 0.8, 0.7);
 
             // Avoid too loud sound
             volume = volume > 2 ? 2 : volume;
