@@ -4,6 +4,11 @@ In this game you are the fearsome Mapinguari and must scare some villans out of 
 
 [Play!](http://andresmrm.gitlab.io/mapinguari/)
 
+## Repositories
+
+- [gitlab](https://gitlab.com/andresmrm/mapinguari)
+- [github](https://github.com/andresmrm/mapinguari)
+
 ## How to run the code?
 
 ### 1. Install node.js and npm:
