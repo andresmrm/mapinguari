@@ -55,7 +55,7 @@ module.exports = {
         },
         {
             test: /\.(eot|svg|ttf|woff|woff2)$/,
-            loader: 'file-loader?name=assets/fonts/[name].[ext]'
+            loader: 'file-loader?emitFile=false&publicPath=assets/fonts/&name=[name].[ext]'
         },
       { test: /pixi\.js/, use: ['expose-loader?PIXI'] },
       { test: /phaser-split\.js$/, use: ['expose-loader?Phaser'] },
