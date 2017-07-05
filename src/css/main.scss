@@ -1,0 +1,121 @@
+@mixin flex-centering() {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@import 'fullscreen-icon';
+
+@font-face {
+    font-family: fixed;
+    src: url("../../assets/fonts/Pixerif.ttf");
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #111;
+    color: white;
+    font-family: fixed;
+    font-size: 32px;
+}
+
+h1 {
+    font-size: 48px;
+    font-weight: normal;
+    text-align: center;
+    margin-top: 0px;
+    text-transform: capitalize;
+}
+
+#menu-container {
+    position: absolute;
+    width: 100%;
+    min-height: 100%;
+    pointer-events: none;
+    display: -webkit-flex;
+    display: -ms-flex;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#menu-content {
+    margin: 2rem;
+    padding: 2rem;
+    max-width: 40rem;
+    background-color: #0d2f0b;
+    border: solid 4px #155908;
+    pointer-events: auto;
+    display: none;
+    text-align: center;
+}
+
+#game-buttons-container {
+    position: fixed;
+    right: 0px;
+    top: 0px;
+
+    a {
+        width: 48px;
+        height: 48px;
+        display: block;
+        // background-color: green;
+        // border: solid 2px #333;
+        box-size: border-box;
+        margin: 4px;
+        &:hover {
+            filter: opacity(75%);
+        }
+    }
+
+    #button-menu {
+        @include flex-centering();
+        display: none;
+        flex-direction: column;
+    }
+
+    #button-map {
+        @include flex-centering();
+        display: none;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        div {
+            margin-left: 1px;
+            width: 16px;
+            height: 16px;
+            background-color: white;
+        }
+    }
+}
+
+
+.bar {
+    width: 32px;
+    height: 4px;
+    margin: 4px;
+    display: block;
+    background-color: white;
+}
+
+a {
+    color: #00998e;
+    text-decoration: none;
+    &:hover {
+        color: aqua;
+    }
+}
+
+
+.button {
+    color: white;
+    display: block;
+    &:hover {
+        color: red;
+    }
+}
+
+
+.hotkey-mark {
+    color: red;
+}

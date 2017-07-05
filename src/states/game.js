@@ -28,6 +28,12 @@ export default class Game extends Phaser.State {
             }
         }
 
+        this.bMenu = document.querySelector('#button-menu')
+        this.bMenu.onclick = () => this.toggleMenu()
+        this.bMap = document.querySelector('#button-map')
+        this.bMap.onclick = () => this.map.toggleFarMap()
+        this.showButtons()
+
         this.startMap()
 
         let resize = () => {
@@ -55,6 +61,11 @@ export default class Game extends Phaser.State {
         this.startAmbientSound()
     }
 
+    showButtons() {
+        if (this.bMap) this.bMap.style.display = 'flex'
+        if (this.bMenu) this.bMenu.style.display = 'flex'
+    }
+
     startAmbientSound() {
         this.forestSound = this.playSound('forest', 0, true)
         this.forestSound.fadeTo(2000, 1)
@@ -64,9 +75,7 @@ export default class Game extends Phaser.State {
     playSound(name, volume, loop) {
         return this.game.audio.play(name, volume, loop)
     }
-    // fadeToSound(name, time, loop) {
-    //     this.game.audio.get(name).fadeTo(time, loop, name)
-    // }
+
     adjustAmbientSound(forestLevel) {
         if (this.forestSound) this.forestSound.fadeTo(2000, forestLevel+0.001)
         if (this.windSound) this.windSound.fadeTo(2000, 1-forestLevel+0.001)
@@ -101,6 +110,10 @@ export default class Game extends Phaser.State {
         if (!this.game.paused) {
             this.game.gui.add(['gamemenu'])
             this.game.paused = true
+            this.bMenu.style.display = 'none'
+            this.bMap.style.display = 'none'
+        } else {
+            this.showButtons()
         }
     }
 

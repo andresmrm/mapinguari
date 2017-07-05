@@ -1,9 +1,10 @@
+import screenfull from 'screenfull'
 import * as Menus from './menus';
 
 
 class Gui {
     constructor () {
-        this.root = document.querySelector('#gui-content')
+        this.root = document.querySelector('#menu-content')
         this.menusPile = []
         this.menus = {}
         Object.keys(Menus).forEach((menuCls) => {
@@ -12,6 +13,13 @@ class Gui {
         })
 
         document.onkeypress = this.keypress.bind(this)
+
+        let bFullscreen = document.querySelector('#button-fullscreen')
+        bFullscreen.onclick = () => {
+            if (screenfull.enabled) {
+		            screenfull.toggle()
+	          }
+        }
     }
 
     // Add menus to the menusPile. Open the first menu on the list.
@@ -68,8 +76,7 @@ class Gui {
     }
 
     startGame() {
-        this.game.readyToStart = true
-        this.game.paused = false
+        this.game.startOrContinue()
     }
 
     restartGame() {

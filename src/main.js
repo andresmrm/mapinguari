@@ -1,3 +1,5 @@
+import './css/main.scss'
+
 import 'pixi'
 import 'p2'
 import Phaser from 'phaser'
@@ -53,6 +55,12 @@ class Game extends Phaser.Game {
 
     playClick() {
         if(this.audio) this.audio.play('click')
+    }
+
+    startOrContinue() {
+        this.readyToStart = true
+        this.paused = false
+        this.state.states.Game.showButtons()
     }
 }
 

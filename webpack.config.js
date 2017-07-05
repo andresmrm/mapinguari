@@ -42,6 +42,23 @@ module.exports = {
   module: {
     rules: [
       { test: /\.js$/, use: ['babel-loader'], include: path.join(__dirname, 'src') },
+        {
+            test: /\.scss$/,
+            use: [{
+                loader: "style-loader"
+            }, {
+                loader: "css-loader"
+            }, {
+                loader: "sass-loader",
+                options: {
+                    include: path.join(__dirname, 'src')
+                }
+            }]
+        },
+        {
+            test: /\.(eot|svg|ttf|woff|woff2)$/,
+            loader: 'file-loader?name=assets/fonts/[name].[ext]'
+        },
       { test: /pixi\.js/, use: ['expose-loader?PIXI'] },
       { test: /phaser-split\.js$/, use: ['expose-loader?Phaser'] },
       { test: /p2\.js/, use: ['expose-loader?p2'] }
