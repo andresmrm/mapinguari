@@ -1,11 +1,12 @@
 {
-  "name": "Hexando",
+  "name": "mapinguari",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "dev": "webpack",
     "deploy": "webpack --config webpack.production.config.js",
+    "serve": "python -m http.server 3000",
     "test": "eslint ./src/**/**.js"
   },
   "license": "AGPL",
