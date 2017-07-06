@@ -104,9 +104,6 @@ export class Map {
         // Current axial coords of the center of view port.
         // Usefull when it's not the center of a sector
         this.viewportCenter = null
-
-        // TODO: Debug
-        window.map = this
     }
 
     // From near to far coords
@@ -147,7 +144,6 @@ export class Map {
                 this.recreateView(center)
             }
         }
-
     }
 
     moveAnimationTime() {
@@ -181,12 +177,6 @@ export class Map {
             true, 0, 1000, true)
 
         this.generateDestroyers()
-
-        this.textDev = this.game.add.text(10,30,'')
-        this.textDes = this.game.add.text(
-            10,50,'', {font: "16px fixed", fill: '#ffffff'})
-        this.textMon = this.game.add.text(
-            10,10,'', {font: "16px fixed", fill: '#ffffff'})
     }
 
     generateDestroyers() {
@@ -200,18 +190,18 @@ export class Map {
     }
 
     updateText() {
+        this.textGui = document.querySelector('#game-text-container')
         this.updatePercDevastated()
-        this.textDev.setText(`${t("devastation")} : ${this.devastation}%`)
         let nonred = Math.round(255-(this.devastation/config.maxDevastation)*255)
         if (nonred<0) nonred = 0
         let color = `rgb(255,${nonred},${nonred})`
-        this.textDev.setStyle({font: "16px fixed", fill: color})
-
-        this.textDes.setText(
-            `${t("destroyers")} : ${this.destroyers}`
-        )
-
-        this.textMon.setText(`${t('month')} : ${this.month}`)
+        this.textGui.innerHTML = `
+        ${t('month')} : ${this.month}
+        <br>
+        ${t("destroyers")} : ${this.destroyers}
+        <br>
+        <span style="color:${color};">${t("devastation")} : ${this.devastation}%</span>
+        `
     }
 
     updateIconCoords() {
@@ -289,8 +279,6 @@ export class Map {
             oldTiles[tile.coords.str()] = tile
         })
 
-        // let sector = this.getSector(this.toFarCoords(center))
-
         // Create new tiles and leave in oldTiles only the
         // ones that should be destroyed
         forEachHexInDist(
@@ -300,7 +288,7 @@ export class Map {
                 // TODO: this check is only needed if config.centerView
                 if (this.checkInsideMap(coords)) {
                     if (!oldTiles[coords.str()]) {
-                        let tile = new NearTile(this, coords, this.nearMapGroup/*, sector*/)
+                        let tile = new NearTile(this, coords, this.nearMapGroup)
                         tile.appear(this.moveAnimationTime())
                     }
                     delete oldTiles[coords.str()]
@@ -552,7 +540,7 @@ export class Map {
         this.rootGroup.destroy()
         this.heightmap.destroy()
         this.microData.destroy()
-        this.textDev.destroy()
+        this.textGui.innerHTML = ''
         delete this
     }
 
