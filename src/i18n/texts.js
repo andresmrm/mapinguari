@@ -23,11 +23,11 @@ export default {
     },
     '-instructions1': {
         en: `Kick out the destroyers of the forest! Don\'t let the devastation level get above ${config.maxDevastation}%, or the forest will be doomed.`,
-        pt: `Expulse os destruidores da floresta! Não deixe o nível de devastação ultrapassar os ${config.maxDevastation}%, ou a foresta estará condenada.`,
+        pt: `Expulse os destruidores da floresta! Não deixe o nível de devastação ultrapassar os ${config.maxDevastation}%, ou a floresta estará condenada.`,
     },
     '-instructions2': {
         en: 'The chainsaw man cut trees. The white hat guy hires more chainsaw men and buys cattle. Don\'t let him stay for long. You must pursue them until they get out of the forest or freak out. You can ignore the cattle.',
-        pt: 'O homem com a motosserra derruba as árvores. O homem como chapéu branco contrata mais homens com motoserra e compra gado. Você precisa perseguí-los até que saiam da floresta ou fujam gritando. Você pode ignorar o gado.'
+        pt: 'O homem com a motosserra derruba as árvores. O homem com chapéu branco contrata mais homens com motoserra e compra gado. Você precisa perseguí-los até que saiam da floresta ou fujam gritando. Você pode ignorar o gado.'
     },
     '-win': {
         en: 'The forest is still alive!',
