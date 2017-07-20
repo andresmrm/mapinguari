@@ -180,20 +180,6 @@ export default class Game extends Phaser.State {
     }
 
     update () {
-        // let speed = 5
-
-        // if (this.cursors.left.isDown) {
-        //     this.game.camera.x = this.game.camera.x - speed
-        // } else if (this.cursors.right.isDown) {
-        //     this.game.camera.x = this.game.camera.x + speed
-        // }
-
-        // if (this.cursors.up.isDown) {
-        //     this.game.camera.y = this.game.camera.y - speed
-        // } else if (this.cursors.down.isDown) {
-        //     this.game.camera.y = this.game.camera.y + speed
-        // }
-
         this.map.update(this.input)
     }
 
@@ -206,7 +192,6 @@ export default class Game extends Phaser.State {
         this.windSound.fadeTo(2000, 1)
         if (this.map.month > 2) this.game.gui.add(['defeatimpossible'])
         else this.game.gui.add(['defeat'])
-
     }
 
     win() {
