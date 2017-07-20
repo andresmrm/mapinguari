@@ -7,7 +7,7 @@ import Phaser from 'phaser'
 import BootState from './states/boot'
 import SplashState from './states/splash'
 import WaitStartState from './states/waitstart'
-import GameState from './states/game'
+import PlayState from './states/play'
 
 import config from './config'
 import gui from './gui/gui'
@@ -28,18 +28,18 @@ class Game extends Phaser.Game {
         this.state.add('Boot', BootState, false)
         this.state.add('Splash', SplashState, false)
         this.state.add('WaitStart', WaitStartState, false)
-        this.state.add('Game', GameState, false)
+        this.state.add('Play', PlayState, false)
 
         this.state.start('Boot')
     }
 
     restart () {
         startNoiseGen()
-        this.state.restart('Game')
+        this.state.restart('Play')
     }
 
     nextLevel () {
-        this.state.states.Game.nextMonth()
+        this.state.states.Play.nextMonth()
     }
 
     initAudio () {
@@ -60,7 +60,7 @@ class Game extends Phaser.Game {
     startOrContinue() {
         this.readyToStart = true
         this.paused = false
-        this.state.states.Game.showButtons()
+        this.state.states.Play.showButtons()
     }
 }
 

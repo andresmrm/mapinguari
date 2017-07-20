@@ -4,7 +4,7 @@ import config from '../config'
 import {Map} from '../map/map'
 import {axialToCube, axialDistance} from '../map/utils'
 
-export default class Game extends Phaser.State {
+export default class Play extends Phaser.State {
     init () {}
     preload () {}
 

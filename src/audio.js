@@ -28,7 +28,6 @@ export function addSound(game, position, soundName, soundGain=1) {
     audio.gainNode.disconnect()
     audio.gainNode.connect(panner)
 
-    // panner.connect(game.sound.masterGain)
     var volume = game.sound.context.createGain()
     panner.connect(volume)
     volume.connect(game.sound.masterGain)
