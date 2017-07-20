@@ -38,12 +38,12 @@ export default {
         pt: 'ganhamos!',
     },
     '-defeat': {
-        en: 'The forest is doomed!',
-        pt: 'A floresta está condenada!',
+        en: 'The forest is doomed! You must try again!',
+        pt: 'A floresta está condenada! Você precisa tentar novamente!',
     },
     '-defeatimpossible': {
-        en: 'The forest is doomed! Yeah... The Mapinguari can\'t do it alone...',
-        pt: 'A floresta está condenada! É... Sozinho o Mapinguari não vai conseguir...',
+        en: 'The forest is doomed! Yeah... The Mapinguari can\'t do it alone... But maybe <a href="https://youtu.be/Rlq6tQfqeBc?t=6m55s" target="_blank">you can help</a>.',
+        pt: 'A floresta está condenada! Sozinho o Mapinguari não vai conseguir... Mas talvez <a href="https://youtu.be/u7LBPHtOBnk?t=6m55s" target="_blank">você possa ajudar</a>.',
     },
     'we lost!': {
         en: '',
