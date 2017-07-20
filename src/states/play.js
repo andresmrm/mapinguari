@@ -64,6 +64,7 @@ export default class Play extends Phaser.State {
     showButtons() {
         if (this.bMap) this.bMap.style.display = 'flex'
         if (this.bMenu) this.bMenu.style.display = 'flex'
+        if (this.map && this.map.textGui) this.map.textGui.style.display = 'block'
     }
 
     startAmbientSound() {
@@ -112,6 +113,7 @@ export default class Play extends Phaser.State {
             this.game.paused = true
             this.bMenu.style.display = 'none'
             this.bMap.style.display = 'none'
+            this.map.textGui.style.display = 'none'
         } else {
             this.showButtons()
         }

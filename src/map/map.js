@@ -196,11 +196,11 @@ export class Map {
         if (nonred<0) nonred = 0
         let color = `rgb(255,${nonred},${nonred})`
         this.textGui.innerHTML = `
-        ${t('month')} : ${this.month}
+        ${t('month')}: ${this.month}
         <br>
-        ${t("destroyers")} : ${this.destroyers}
+        ${t("destroyers")}: ${this.destroyers}
         <br>
-        <span style="color:${color};">${t("devastation")} : ${this.devastation}%</span>
+        <span style="color:${color};">${t("devastation")}: ${this.devastation}%</span>
         `
     }
 
@@ -229,7 +229,7 @@ export class Map {
     axialToPixelPointy(coords) {
         let x = this.tileWidth * (coords.x + coords.y/2),
             y = this.tilePointyHeightVariationPerRow * coords.y
-        return {x, y}
+        return new Axial(x, y)
     }
 
     // hex to pixel - flat top
@@ -251,7 +251,7 @@ export class Map {
         x = Math.round(x)
         y = Math.round(y)
         // return cubeToAxial(cubeRound(axialToCube({x, y})))
-        return {x, y}
+        return new Axial(x, y)
     }
 
     addSprite(group, coords, tile=0) {

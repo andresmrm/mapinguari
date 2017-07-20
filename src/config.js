@@ -25,11 +25,6 @@ let defaultConfig = {
 let config = null,
     storeName = defaultConfig.localStorageName
 
-// Saves configs
-function saveConfig() {
-    localStorage[storeName] = JSON.stringify(config)
-}
-
 if (localStorage[storeName]) {
     // Loads previous saved configs
     config = JSON.parse(localStorage[storeName])
@@ -37,6 +32,10 @@ if (localStorage[storeName]) {
     // No save configs found, use default config
     config = defaultConfig
 }
-config.save = saveConfig
+
+// Saves configs
+config.save = function saveConfig() {
+    localStorage[storeName] = JSON.stringify(config)
+}
 
 export default config

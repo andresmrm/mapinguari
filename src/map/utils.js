@@ -184,6 +184,11 @@ export class Axial {
     str() {
         return this.x + ',' + this.y
     }
+    // check if this and another Axial coord are equal
+    equal(b) {
+        if (this.x == b.x && this.y == b.y) return true
+        else return false
+    }
 }
 
 
