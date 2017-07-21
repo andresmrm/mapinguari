@@ -6,7 +6,7 @@ export default {
         pt: 'O Assustador Mapinguari'
     },
     '-history': {
-        en: 'The <a href="https://en.wikipedia.org/wiki/Mapinguari" target="_blank" onclick="javascript:window.track(\'link\', \'mapinguari\');">Mapinguari</a> is a mytical creature from the Amazon rainforest. Generaly he doesn\'t care much about protecting the forest. But nowadays, the speed the destruction is happeding left him no choice.',
+        en: 'The <a href="https://en.wikipedia.org/wiki/Mapinguari" target="_blank" onclick="javascript:window.track(\'link\', \'mapinguari\');">Mapinguari</a> is a mythical creature from the Amazon rainforest. Generally he doesn\'t care much about protecting the forest. But nowadays, the speed the destruction is happening left him no choice.',
         pt: 'O <a href="https://pt.wikipedia.org/wiki/Mapinguari" target="_blank" onclick="javascript:window.track(\'link\', \'mapinguari\');">Mapinguari</a> é uma das criaturas míticas da Amazônia. Geralmente ele não se preocupa muito em proteger a floresta. Mas na velocidade em que ela tem sido destruída atualmente, ele não teve muita escolha.'
     },
     '-about': {
@@ -27,7 +27,7 @@ export default {
     },
     '-instructions2': {
         en: 'The chainsaw man cut trees. The white hat guy hires more chainsaw men and buys cattle. Don\'t let him stay for long. You must pursue them until they get out of the forest or freak out. You can ignore the cattle.',
-        pt: 'O homem com a motosserra derruba as árvores. O homem com chapéu branco contrata mais homens com motoserra e compra gado. Você precisa perseguí-los até que saiam da floresta ou fujam gritando. Você pode ignorar o gado.'
+        pt: 'O homem com a motosserra derruba as árvores. O homem com chapéu branco contrata mais homens com motosserra e compra gado. Você precisa perseguí-los até que saiam da floresta ou fujam gritando. Você pode ignorar o gado.'
     },
     '-tracking': {
         en: 'This game uses <a href="https://en.wikipedia.org/wiki/Piwik" target="_blank" onclick="javascript:window.track(\'link\', \'piwik\');">Piwik</a> to collect data about what you do here. The main reason is to know if anyone is playing and reaching the end of the game. You can change this with the button below:',
@@ -38,12 +38,12 @@ export default {
         pt: 'O Piwik respeita a opção <a href="http://donottrack.us" target="_blank" onclick="javascript:window.track(\'link\', \'donottrack\');">Do Not Track</a> do seu navegador. Logo, se você já a deixou ativa os dados não serão coletados. Tomamos o cuidando de não usar o <a href="https://en.wikipedia.org/wiki/Google_Analytics#Privacy" target="_blank" onclick="javascript:window.track(\'link\', \'g-analytics-privacy\');">Google Analytics</a>. ;-)'
     },
     '-tracking3': {
-        en: 'If you are woried about beeing tracked in websites that do not respect Do Not Track, check <a href="https://github.com/gorhill/uBlock" target="_blank" onclick="javascript:window.track(\'link\', \'ublock\');">UBlock Origin</a>.',
+        en: 'If you are worried about being tracked in websites that do not respect Do Not Track, check <a href="https://github.com/gorhill/uBlock" target="_blank" onclick="javascript:window.track(\'link\', \'ublock\');">UBlock Origin</a>.',
         pt: 'Se você tem preocupação quanto a coleta de dados em sites que não respeitam o Do Not Track, dê uma olhada no <a href="https://github.com/gorhill/uBlock" target="_blank" onclick="javascript:window.track(\'link\', \'ublock\');">UBlock Origin</a>.',
     },
     '-win': {
         en: 'The forest is still alive!',
-        pt: 'A floresta permance viva!',
+        pt: 'A floresta permanece viva!',
     },
     'we won!': {
         en: '',
@@ -63,7 +63,7 @@ export default {
     },
     'next month': {
         en: '',
-        pt: 'proximo mês',
+        pt: 'próximo mês',
     },
     'month': {
         en: '',
