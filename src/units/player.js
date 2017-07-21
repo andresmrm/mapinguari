@@ -7,7 +7,7 @@ export default class Player extends Unit {
     constructor (map, coords) {
         super(map, coords, 31)
         this.actionThrottleTime = 250
-        this.lastClickCoords = null
+        this.lastPointerCoords = null
     }
 
     move(direction) {
@@ -27,11 +27,15 @@ export default class Player extends Unit {
         // Saving last clicked coords we avoid losing clicks due
         // to action throttle.
         if (this.game.input.activePointer.isDown) {
-            this.lastClickCoords = this.map.pixelToAxialPointy(
-                {x:this.game.input.x, y:this.game.input.y})
+            this.saveMouseCoords()
         }
 
         super.update()
+    }
+
+    saveMouseCoords() {
+        this.lastPointerCoords = this.map.pixelToAxialPointy(
+            {x:this.game.input.x, y:this.game.input.y})
     }
 
     live() {
@@ -49,12 +53,16 @@ export default class Player extends Unit {
                 }
             )
 
+            if (config.followMouse) {
+                this.saveMouseCoords()
+            }
+
             // Check pointer (mouse or touch) and move
-            if (config.followMouse || this.lastClickCoords) {
-                this.moveTo(this.lastClickCoords)
+            if (this.lastPointerCoords) {
+                this.moveTo(this.lastPointerCoords)
                 // If arrived destination, stop moving
-                if (this.lastClickCoords.equal(this.coords))
-                    this.lastClickCoords = null
+                if (this.lastPointerCoords.equal(this.coords))
+                    this.lastPointerCoords = null
             }
 
         }
