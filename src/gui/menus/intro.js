@@ -19,6 +19,9 @@ export default class Intro extends Menu {
         this.addButton('change hotkeys', () => {
             this.manager.add(['hotkeys'])
         })
+        this.addButton('data collection', () => {
+            this.manager.add(['tracking'])
+        })
         this.addButton('about', () => {
             this.manager.add(['about'])
         })

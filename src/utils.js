@@ -1,3 +1,6 @@
+import config from './config'
+
+
 export const centerGameObjects = (objects) => {
   objects.forEach(function (object) {
     object.anchor.setTo(0.5)
@@ -19,3 +22,12 @@ export function getKeyStr(event) {
     }
     return str
 }
+
+export function track(category, action) {
+    if (config.trackingEnabled) {
+        try {
+            _paq.push(['trackEvent', category, action])
+        } catch (e) {}
+    }
+}
+window.track = track

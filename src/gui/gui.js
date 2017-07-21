@@ -1,3 +1,4 @@
+import {track} from '../utils'
 import screenfull from 'screenfull'
 import * as Menus from './menus';
 
@@ -18,7 +19,10 @@ class Gui {
         bFullscreen.onclick = () => {
             if (screenfull.enabled) {
 		            screenfull.toggle()
-	          }
+                track('click', 'fullscreen')
+	          } else {
+                track('click', 'fullscreen-was-disabled!')
+            }
         }
     }
 

@@ -18,6 +18,9 @@ export default class GameMenu extends Menu {
         this.addButton('change hotkeys', () => {
             this.manager.add(['hotkeys'])
         })
+        this.addButton('data collection', () => {
+            this.manager.add(['tracking'])
+        })
         this.addButton('restart game', () => {
             this.manager.restartGame()
             this.close()

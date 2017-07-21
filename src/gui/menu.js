@@ -1,4 +1,4 @@
-import {getKeyStr} from '../utils'
+import {getKeyStr, track} from '../utils'
 import t from '../i18n/i18n'
 
 export default class Menu {
@@ -33,6 +33,7 @@ export default class Menu {
             hotkey, `<span class="hotkey-mark">${hotkey}</span>`)
 
         let buttomFn = () => {
+            track('menu-click', textName)
             this.manager.playClick()
             fn()
         }

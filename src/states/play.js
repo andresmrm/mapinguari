@@ -3,6 +3,7 @@ import Phaser from 'phaser-ce'
 import config from '../config'
 import {Map} from '../map/map'
 import {axialToCube, axialDistance} from '../map/utils'
+import {track} from '../utils'
 
 export default class Play extends Phaser.State {
     init () {}
@@ -29,9 +30,14 @@ export default class Play extends Phaser.State {
         }
 
         this.bMenu = document.querySelector('#button-menu')
-        this.bMenu.onclick = () => this.toggleMenu()
+        this.bMenu.onclick = () => {
+            this.toggleMenu()
+        }
         this.bMap = document.querySelector('#button-map')
-        this.bMap.onclick = () => this.map.toggleFarMap()
+        this.bMap.onclick = () => {
+            track('game-click', 'toggle-map')
+            this.map.toggleFarMap()
+        }
         this.showButtons()
 
         this.startMap()
@@ -192,15 +198,22 @@ export default class Play extends Phaser.State {
     defeat() {
         this.forestSound.fadeTo(2000, 0)
         this.windSound.fadeTo(2000, 1)
-        if (this.map.month > 2) this.game.gui.add(['defeatimpossible'])
-        else this.game.gui.add(['defeat'])
+        if (this.map.month > 2) {
+            track('game', 'defeat-impossible')
+            this.game.gui.add(['defeatimpossible'])
+        } else {
+            track('game', 'defeat')
+            this.game.gui.add(['defeat'])
+        }
     }
 
     win() {
+        track('game', 'win')
         this.game.gui.add(['win'])
     }
 
     nextMonth() {
+        track('game', 'next-month')
         this.map.nextMonth()
     }
 }
