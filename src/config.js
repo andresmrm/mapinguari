@@ -24,16 +24,16 @@ let defaultConfig = {
     version: 1.1,
 }
 
-let config = null,
+let config = defaultConfig,
     storeName = defaultConfig.localStorageName
 
-if (localStorage[storeName]
-    && localStorage[storeName].version == defaultConfig.version) {
+if (localStorage[storeName]) {
     // Loads previous saved configs
-    config = JSON.parse(localStorage[storeName])
-} else {
-    // No saved configs found or version mismatch, use default config
-    config = defaultConfig
+    let restoredConfig = JSON.parse(localStorage[storeName])
+    if (restoredConfig.version == defaultConfig.version) {
+        // restored config is valid, replace default config
+        config = restoredConfig
+    }
 }
 
 // Saves configs
