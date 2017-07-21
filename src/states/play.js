@@ -199,21 +199,21 @@ export default class Play extends Phaser.State {
         this.forestSound.fadeTo(2000, 0)
         this.windSound.fadeTo(2000, 1)
         if (this.map.month > 2) {
-            track('game', 'defeat-impossible')
+            track('game', 'defeat-impossible:'+this.map.month)
             this.game.gui.add(['defeatimpossible'])
         } else {
-            track('game', 'defeat')
+            track('game', 'defeat:'+this.map.month)
             this.game.gui.add(['defeat'])
         }
     }
 
     win() {
-        track('game', 'win')
+        track('game', 'win:'+this.map.month)
         this.game.gui.add(['win'])
     }
 
     nextMonth() {
-        track('game', 'next-month')
+        track('game', 'next-month:'+this.map.month)
         this.map.nextMonth()
     }
 }
