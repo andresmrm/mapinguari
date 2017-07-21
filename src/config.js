@@ -8,6 +8,7 @@ let defaultConfig = {
     centerView: true,
     tileOver: false,
     followMouse: false,
+    trackingEnabled: true,
     keybinds: {
         move: {
             ne: Phaser.Keyboard.E,
@@ -20,16 +21,18 @@ let defaultConfig = {
         map: Phaser.Keyboard.M,
     },
     maxDevastation: 50,
+    version: 1.1,
 }
 
 let config = null,
     storeName = defaultConfig.localStorageName
 
-if (localStorage[storeName]) {
+if (localStorage[storeName]
+    && localStorage[storeName].version == defaultConfig.version) {
     // Loads previous saved configs
     config = JSON.parse(localStorage[storeName])
 } else {
-    // No save configs found, use default config
+    // No saved configs found or version mismatch, use default config
     config = defaultConfig
 }
 
