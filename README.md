@@ -2,7 +2,7 @@
 
 ![Mapinguari](https://gitlab.com/andresmrm/mapinguari/raw/master/assets/images/cave2.png)
 
-In this simple game you are the fearsome Mapinguari and must scare some villans out of the forest.
+In this simple game you are the fearsome Mapinguari, a mythical creature from the Amazon rainforest, and must scare some villains out of the forest.
 
 [**Play!**](http://andresmrm.gitlab.io/mapinguari/)
 
